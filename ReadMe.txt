@@ -11,3 +11,5 @@ ExamplePolicies.m and ExamplecallingcPDEs.m contains examples that show how to c
 
 TO REPLICATE THE FIGURES AND TABLES IN CHICK, GANS, YAPAR (2020)
 Run ReplicateFiguresRev1.m to generate the simulation results needed for figures and tables, and to generate figures and tables themselves. NOTE: Be aware that ReplicateFiguresRev1.m runs all simulation replications reported in the paper sequentially, therefore takes a consirable amount of time to be completed. It is possible to run simulation repliations in different CPUs in parallel, collect all simulation data to the same folder, and calculate summary statistics needed for figures and tables.
+
+I am adding this sentence to test the repo.
