@@ -5,7 +5,7 @@
 SetPaths
 
 %% Section 6.2
-sec62folder = strcat(pdecorr, 'Outputs\Sec62\');  %path to the folder that contains all merged files for 1000 replications
+sec62folder = strcat(pdecorr, 'OutputsTest\Sec62\');  %path to the folder that contains all merged files for 1000 replications
 mkdir(sec62folder);
 
 % SimforFig1
@@ -58,7 +58,7 @@ names = {'Equal', 'cKG*', 'cPDELower'};
 [meandOCp6a100, sedOCp6a100] = CalculateandPlotCIofOC( result, NUMOFREPS, NUMOFREPS, names, 100, linS, 100, 0);
 
 %% Section 6.3
-sec63folder = strcat(pdecorr, 'Outputs\Sec63\'); 
+sec63folder = strcat(pdecorr, 'OutputsTest\Sec63\'); 
 mkdir(sec63folder);
 
 % SimforTab1
@@ -133,7 +133,7 @@ savefig(f1, strcat(figurename, '.fig'));
 saveas(f1, figurename, 'epsc')
 
 %% Section 6.4
-sec64folder = strcat(pdecorr, 'Outputs\Sec64\');
+sec64folder = strcat(pdecorr, 'OutputsTest\Sec64\');
 mkdir(sec64folder);
 
 % SimforTab2
@@ -273,7 +273,7 @@ set(gca,'FontSize',36)
 set(gca,'fontname','times')
 
 %% Section 7.2
-sec72folder = strcat(pdecorr, 'Outputs\Sec72\');
+sec72folder = strcat(pdecorr, 'OutputsTest\Sec72\');
 mkdir(sec72folder);
 
 % SimforFig4
@@ -332,7 +332,7 @@ PlotLogOCCurves( result, names, 0, NUMOFREPS, NUMOFREPS, 100, linS,figurename)
 PlotLogOCCurves( result, names, 1, NUMOFREPS, NUMOFREPS, 100, linS,figurename)
 
 %% Appendix C.1
-appc1folder = strcat(pdecorr, 'Outputs\AppC1\'); 
+appc1folder = strcat(pdecorr, 'OutputsTest\AppC1\'); 
 mkdir(appc1folder);
 
 % SimforTabEC2
@@ -350,13 +350,13 @@ toCopyMatAppC(3, :) = toCopy;
 save(strcat(appc1folder,'AppC1-tabec2.mat'),'toCopyMatAppC');
 
 %% Appendix C.2 and C.3
-appc23folder = strcat(pdecorr, 'Outputs\AppC2andC3\'); 
+appc23folder = strcat(pdecorr, 'OutputsTest\AppC2andC3\'); 
 mkdir(appc23folder);
 
 PlotsAppC
 
 %% Appendix D
-appdfolder = strcat(pdecorr, 'Outputs\AppD1\');
+appdfolder = strcat(pdecorr, 'OutputsTest\AppD1\');
 mkdir(appdfolder);
 
 % SimforAppD1
