@@ -8,8 +8,6 @@
 %% SET PATHS
 SetPaths
 %% MONTE CARLO SIM PREPARE, RUN ONCE
-% Folder to save the variables needed
-variablesfolder = [ corrbasefol '\multiarmMatlab\'];
 % USED FOR SIM REPLICATIONS 1-1000
 rng(42,'twister');
 observ = normrnd(0,1,[100,5*10^3,10^3]); %observations for 20 alternatives and 5000 periods and 10^3 replications 
@@ -19,7 +17,7 @@ rng(46,'twister');
 doserespv = normrnd(0,1,[10,10,10^3]); %dose response values for 10 samples each from 10 doses and 10^3 replications
 rng(47,'twister');
 seed = randi(2^32,1,10^3); %seeds to be used in each replication
-foldertosave = strcat(variablesfolder,'variables/');
+foldertosave = strcat(pdecorr,'variables/');
 mkdir(foldertosave);
 save('variables/observ','observ','-v7.3');
 save('variables/thetav','thetav');

@@ -34,11 +34,11 @@ function [result,parameters] = FuncAppDPowerCurveSeq( myJobNum, n, r, priorind, 
 %%
     %% Initilization work
     % needed for the server
-    addpath(genpath('matlabKG'),genpath('pdestop'),genpath('multiarmMatlab'));
+    addpath(genpath(kgcbfolder),genpath(pdecodefolder),genpath(pdecorrfolder));
     
     % load standardized solution files
     PDELocalInit;
-    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles('pdestop/Matfiles/', false); %needed everytime - load solution files
+    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %needed everytime - load solution files
     
     %Defines rules
     DefineRules;

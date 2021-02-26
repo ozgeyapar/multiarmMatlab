@@ -16,11 +16,10 @@
 
 %% SET PATHS
 SetPaths
-[corrbasefol,~,~] = fileparts(pwd);
 
 %% Figure 1 in Section 6.2
 % Folder to save results
-sec62folder = [ corrbasefol '\multiarmMatlab\Outputs\Sec62\']; 
+sec62folder = strcat(pdecorr, 'Outputs\Sec62\'); 
 mkdir(sec62folder);
 
 % Generate Figure 1
@@ -29,7 +28,7 @@ PlotFig1
 
 %% Table 1 in Section 6.3
 % Folder to save results
-sec63folder = [ corrbasefol '\multiarmMatlab\Outputs\Sec63\']; 
+sec63folder = strcat(pdecorr, 'Outputs\Sec63\'); 
 mkdir(sec63folder);
 
 % Generate Table 1
@@ -41,7 +40,7 @@ FindingtheFixedTforTable1
 
 %% Section 6.4
 % Folder to save results
-sec64folder = [ corrbasefol '\multiarmMatlab\Outputs\Sec64\'];
+sec64folder = strcat(pdecorr, 'Outputs\Sec64\');
 mkdir(sec64folder);
 
 % Generate Table 2
@@ -60,7 +59,7 @@ FindingtheFixedTforTable2
 % Figure 1 portion above.
 
 % Folder to save results
-sec72folder = [ corrbasefol '\multiarmMatlab\Outputs\Sec72\']; 
+sec72folder = strcat(pdecorr, 'Outputs\Sec72\'); 
 mkdir(sec72folder);
 
 % Generate Figure 1
@@ -69,7 +68,7 @@ PlotFig4
 
 %% Appendix C.1
 % Folder to save results
-appc1folder = [ corrbasefol '\multiarmMatlab\Outputs\AppC1\']; 
+appc1folder = strcat(pdecorr, 'Outputs\AppC1\'); 
 mkdir(appc1folder);
 
 % Generate Table EC2 in App C1
@@ -78,7 +77,7 @@ MergeandGenerateTableEC2
 
 %% Appendix C.2 and C.3
 % Folder to save results
-appc23folder = [ corrbasefol '\multiarmMatlab\Outputs\AppC2andC3\']; 
+appc23folder = strcat(pdecorr, 'Outputs\AppC2andC3\'); 
 mkdir(appc23folder);
 
 % Generate Figure EC1-EC4
@@ -86,7 +85,7 @@ PlotsAppC
 
 %% Appendix D
 % Folder to save results
-appdfolder = [ corrbasefol '\multiarmMatlab\Outputs\AppD1\'];
+appdfolder = strcat(pdecorr, 'Outputs\AppD1\');
 mkdir(appdfolder);
 
 % Generate Figure EC5

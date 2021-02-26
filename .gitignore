@@ -1,0 +1,14 @@
+## Residual matlab documents
+*.asv
+*.mat
+
+## Figures
+*.eps
+*.fig
+
+## SetPaths so it can localized
+SetPaths.m
+
+## Folders with results
+Outputs/
+variables/

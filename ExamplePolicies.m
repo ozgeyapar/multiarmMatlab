@@ -22,7 +22,7 @@ end
 %% Allocation policies that use standardized solution
 % Load general standardized PDE solution 
 PDELocalInit;
-[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles('pdestop/Matfiles/', false); %load solution files
+[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %load solution files
 
 % Call the allocation policy, parameters variable is defined 
 % in ExampleProblemSetup.m

@@ -24,11 +24,11 @@ function [result,parameters] = FuncAppCEVIandCompTime( myJobNum, repn, alttograp
 %%
     %% Initilization work
     % needed for the server
-    addpath(genpath('matlabKG'),genpath('pdestop'),genpath('multiarmMatlab'));
+    addpath(genpath(kgcbfolder),genpath(pdecodefolder),genpath(pdecorrfolder));
     
     % load standardized solution files
     PDELocalInit;
-    [cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles('pdestop/Matfiles/', false); %load solution files
+    [cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %load solution files
     
     %Defines rules
     DefineRules;

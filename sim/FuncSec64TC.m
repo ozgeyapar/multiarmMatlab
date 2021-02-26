@@ -53,11 +53,11 @@ function [result,parameters] = FuncSec64TC( myJobNum, n, r, priorind, expname, n
     end
 
     % needed for the server
-    addpath(genpath('matlabKG'),genpath('pdestop'),genpath('multiarmMatlab'));
+    addpath(genpath(kgcbfolder),genpath(pdecodefolder),genpath(pdecorrfolder));
     % load standardized solution files
     % load standardized solution files
     PDELocalInit;
-    [cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles('pdestop/Matfiles/', false); %needed everytime - load solution files
+    [cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %needed everytime - load solution files
     
     %Defines rules
     DefineRules;
