@@ -21,13 +21,13 @@ Below stages should be implemented once per machine to create code to describe t
     
     [corrbasefol,name,ext] = fileparts(pwd);
 
-    pdecorr = [ corrbasefol strcat('\\', pdecorrfolder,'\\')];
+    pdecorr = [ corrbasefol strcat('\', pdecorrfolder,'\')];
     addpath(genpath(pdecorr));
 
-    pdecode = [ corrbasefol strcat('\\', pdecodefolder,'\\')];
+    pdecode = [ corrbasefol strcat('\', pdecodefolder,'\')];
     addpath(genpath(pdecode));
     
-    kgcb = [ corrbasefol strcat('\\', kgcbfolder,'\\')];
+    kgcb = [ corrbasefol strcat('\', kgcbfolder,'\')];
     addpath(genpath(kgcb));
 ```	
 If your directory structure or folder names are different, adjust the SetPaths.m code accordingly. pdecorr, pdecode and kgcb should contain the directories of multiarmMatlab, pdestop and matlabKG codes.
