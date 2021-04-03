@@ -14,22 +14,22 @@ Below stages should be implemented once per machine to create code to describe t
 4. Put multarmcode, pdestop, and matlabKG folders into the same directory. 
 5. Make multiarmMatlab folder the current directory. 
 6. Create a file called **SetPaths.m**, which has the following:
-
+```
     pdecorrfolder = 'multiarmMatlab';
     pdecodefolder = 'pdestop';
     kgcbfolder = 'matlabKG';
     
     [corrbasefol,name,ext] = fileparts(pwd);
 
-    pdecorr = [ corrbasefol strcat('\', pdecorrfolder,'\')];
+    pdecorr = [ corrbasefol strcat('\\', pdecorrfolder,'\\')];
     addpath(genpath(pdecorr));
 
-    pdecode = [ corrbasefol strcat('\', pdecodefolder,'\')];
+    pdecode = [ corrbasefol strcat('\\', pdecodefolder,'\\')];
     addpath(genpath(pdecode));
     
-    kgcb = [ corrbasefol strcat('\', kgcbfolder,'\')];
+    kgcb = [ corrbasefol strcat('\\', kgcbfolder,'\\')];
     addpath(genpath(kgcb));
-	
+```	
 If your directory structure or folder names are different, adjust the SetPaths.m code accordingly. pdecorr, pdecode and kgcb should contain the directories of multiarmMatlab, pdestop and matlabKG codes.
 
 7. Run SetSolFiles.m, which creates the standardized PDE solution files to be used in cPDELower and cPDEUpper policies. This step is needed to run only once per machine.
