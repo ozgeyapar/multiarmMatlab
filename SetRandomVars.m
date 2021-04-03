@@ -33,7 +33,7 @@ rng(214553,'twister');
 doserespv = normrnd(0,1,[10,10,10^3]); %dose response values for 10 samples each from 10 doses and 10^3 replications
 rng(19343,'twister');
 seed = randi(2^32,1,10^3); %seeds to be used in each replication
-foldertosave = strcat(variablesfolder,'variables/btw1001and2000');
+foldertosave = strcat(pdecorr,'variables/btw1001and2000');
 mkdir(foldertosave);
 save(strcat(foldertosave,'/observ'),'observ','-v7.3');
 save(strcat(foldertosave,'/thetav'),'thetav');
@@ -49,7 +49,7 @@ rng(5464,'twister');
 doserespv = normrnd(0,1,[10,10,10^3]); %dose response values for 10 samples each from 10 doses and 10^3 replications
 rng(51650,'twister');
 seed = randi(2^32,1,10^3); %seeds to be used in each replication
-foldertosave = strcat(variablesfolder,'variables/btw2001and3000');
+foldertosave = strcat(pdecorr,'variables/btw2001and3000');
 mkdir(foldertosave);
 save(strcat(foldertosave,'/observ'),'observ','-v7.3');
 save(strcat(foldertosave,'/thetav'),'thetav');
@@ -65,7 +65,7 @@ rng(545,'twister');
 doserespv = normrnd(0,1,[10,10,10^3]); %dose response values for 10 samples each from 10 doses and 10^3 replications
 rng(9951,'twister');
 seed = randi(2^32,1,10^3); %seeds to be used in each replication
-foldertosave = strcat(variablesfolder,'variables/btw3001and4000');
+foldertosave = strcat(pdecorr,'variables/btw3001and4000');
 mkdir(foldertosave);
 save(strcat(foldertosave,'/observ'),'observ','-v7.3');
 save(strcat(foldertosave,'/thetav'),'thetav');
@@ -81,7 +81,7 @@ rng(40216,'twister');
 doserespv = normrnd(0,1,[10,10,10^3]); %dose response values for 10 samples each from 10 doses and 10^3 replications
 rng(6465156,'twister');
 seed = randi(2^32,1,10^3); %seeds to be used in each replication
-foldertosave = strcat(variablesfolder,'variables/btw4001and5000');
+foldertosave = strcat(pdecorr,'variables/btw4001and5000');
 mkdir(foldertosave);
 save(strcat(foldertosave,'/observ'),'observ','-v7.3');
 save(strcat(foldertosave,'/thetav'),'thetav');

@@ -4,7 +4,7 @@
 %   the simulation results and figures.
 %   2. Generate the figures and tables for correlated multiarm paper.
 %
-% OUTPUTS: For each section of the paper Chich, Gans, Yapar (2020), 
+% OUTPUTS: For each section of the paper Chick, Gans, Yapar (2020), 
 % simulation results (.mat) and figures (.fig and .eps) will be saved in 
 % folder Outputs\Sectionname where Sectionname is the
 % approprite section number for that figure or table.
@@ -13,9 +13,6 @@
 % machine beforehand to generate the standardized PDE solution to be used
 % for cPDELower and cPDEUpper and to generate the random variables to be
 % used in the simulation replications.
-
-%% SET PATHS
-SetPaths
 
 %% Figure 1 in Section 6.2
 % Folder to save results

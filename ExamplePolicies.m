@@ -6,7 +6,20 @@
 % generate the standardized PDE solution.
 %
 %% SET THE EXAMPLE PROBLEM
-ExampleProblemSetup
+%%% Problem parameters
+M = 20; %number of arms
+lambdav = 10^6*ones(1,M); %sampling variance
+mu0=zeros(M,1); %vector of prior means
+[sigma0,~] = PowExpCov(1/2,(M-1)/sqrt(16),2,M,1); %matrix of prior coviarance
+P = 10^6; %population size
+I = zeros(M,1); % fixed implementation cost
+c = ones(1,M); %variable cost of sampling
+Tfixed = 200; % Fixed sample size that will be used by the fixed stopping time
+delta = 1; %discount rate
+
+%%% Call SetParametersFunc to setup the struct and check inputs
+list = {'M',M,'lambdav',lambdav,'mu0',mu0,'sigma0',sigma0,'efns',lambdav./diag(sigma0)','P',P,'I',I,'c',c, 'delta', delta, 'pdetieoption', 'kgstar', 'Tfixed', Tfixed};
+[ parameters, ~ ] = SetParametersFunc( list );
 
 %% Current prior distribution
 rng default
@@ -22,7 +35,7 @@ end
 %% Allocation policies that use standardized solution
 % Load general standardized PDE solution 
 PDELocalInit;
-[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %load solution files
+[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
 
 % Call the allocation policy, parameters variable is defined 
 % in ExampleProblemSetup.m

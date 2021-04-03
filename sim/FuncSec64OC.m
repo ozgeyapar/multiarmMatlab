@@ -40,12 +40,12 @@ function [result,parameters] = FuncSec64OC( myJobNum, n, r, names, priorind, Tfi
         zalpha = 1/2;
     end
     
-    % needed for the server
+    SetPaths
     addpath(genpath(kgcbfolder),genpath(pdecodefolder),genpath(pdecorrfolder));
-
+    
     % load standardized solution files
     PDELocalInit;
-    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %load solution files
+    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
     
     %Defines rules
     DefineRules;

@@ -8,9 +8,6 @@
 % generate the standardized PDE solution to be used for cPDELower and 
 % cPDEUpper.
 
-%% SET PATHS
-SetPaths
-
 %% DEFINE THE EXAMPLE PROBLEM
 M = 20; %number of alternatives
 parameters.M = M;
@@ -47,7 +44,7 @@ end
 i = 5; %get evi of arm i
 % Load general standardized PDE solution 
 PDELocalInit;
-[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %load solution files
+[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
 
 % To get the evi from cPDELower and cPDEUpper for an undiscounted problem
 evilower = cPDELowerUndis( cfSoln, parameters, mucur, sigmacur, i )

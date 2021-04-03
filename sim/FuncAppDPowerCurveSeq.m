@@ -33,12 +33,12 @@ function [result,parameters] = FuncAppDPowerCurveSeq( myJobNum, n, r, priorind, 
 
 %%
     %% Initilization work
-    % needed for the server
+    SetPaths
     addpath(genpath(kgcbfolder),genpath(pdecodefolder),genpath(pdecorrfolder));
     
     % load standardized solution files
     PDELocalInit;
-    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(strcat(pdecode, 'Matfiles/'), false); %needed everytime - load solution files
+    [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
     
     %Defines rules
     DefineRules;
