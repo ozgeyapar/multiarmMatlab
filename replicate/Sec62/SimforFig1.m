@@ -13,7 +13,7 @@
 % WORKFLOW: Called in ReplicateFiguresRev1.m after defining sec62folder 
 
 %% To run all 1000 sample paths for alpha = 100/(M-1)^2 and P = 10^6
-NUMOFREPS = 1000; %number of replications for the simulation, 1000 in the paper
+NUMOFREPS = 1000; % number of replications for the simulation, 1000 in the paper
 alphaval = 100;
 pval = 6;
 for n = 1:NUMOFREPS
