@@ -1,4 +1,4 @@
-function [ stop ] = StoppingcPDEHeu( undissoln, dissoln, parameters, muin, sigmain, t)
+function [ stop ] = StoppingcPDEHeu( undissoln, dissoln, parameters, muin, sigmain)
 %StoppingcPDEHeu
 % PURPOSE: Implements the cPDE stopping time defined in Chick, Gans,
 % Yapar (2020) using a heuristic that is faster. Returns 1 for stopping and

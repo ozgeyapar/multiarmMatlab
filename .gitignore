@@ -9,7 +9,10 @@
 ## SetPaths so it can localized
 SetPaths.m
 
-## Folders with results
+## Folders with results and matfiles
 Outputs/
 variables/
 OutputsTest/
+
+##Unused Matlab Files
+Unused/

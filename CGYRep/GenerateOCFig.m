@@ -1,6 +1,19 @@
-function GenerateFig1(result, figurename, includese)
-%GENERATEFIG1 Summary of this function goes here
-%   Detailed explanation goes here
+function GenerateOCFig(result, foldername, filename, includese)
+%GenerateOCFig
+% PURPOSE: Plots the log(E[OC]) for each allocation policy and saves the 
+% plots as .fig and .eps files if asked. Used for 
+% simulations that compare allocation policies
+% when each is used with the same fixed stopping time.
+%
+% INPUTS: 
+% result: struct array that contains OC at each period
+% foldername: string, directory to be saved, -1 if it will not be saved
+% filename: string, the name of the figure file if it will be saved
+% includese: if 1, the plot includes the +/-1 standard error bars for each
+%   allocation policy at each period
+% OUTPUTS: Generates a plot and saves it as figurename.fig and 
+% figurename.eps if specified.
+%
 %%
     NUMOFPPOL = result.nofpols;
     NUMOFREPS  = result.nofreps;
@@ -42,9 +55,11 @@ function GenerateFig1(result, figurename, includese)
         set(gca,'FontSize',36)
         set(gca,'fontname','times')
     end
-
-    %Save the figure
-    savefig(f, strcat(figurename, '.fig'));
-    saveas(f, figurename, 'epsc')
+    if foldername ~= -1
+        %Save the figure
+        CheckandCreateDir( foldername )
+        savefig(f, strcat(foldername, filename, '.fig'));
+        saveas(f, strcat(foldername, filename), 'epsc')
+    end
 end
 

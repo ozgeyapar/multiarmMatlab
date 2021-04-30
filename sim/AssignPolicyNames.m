@@ -1,4 +1,4 @@
-function [ rulename ] = AssignPolicyNames( functionname, functiontype, randprob, Tfixed)
+function [ rulename ] = AssignPolicyNames( functionname, functiontype, rtype, rprob, Tfixed)
 %AssignPolicyNames
 % PURPOSE: Generates a name for allocation policy or stopping time 
 %   to be used in legends
@@ -6,8 +6,9 @@ function [ rulename ] = AssignPolicyNames( functionname, functiontype, randprob,
 % INPUTS: 
 % functionname: string, use func2str when inputting
 % functiontype: numerical, 1 or 2. 1 for 'allocation' and 2 for 'stopping'
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% rtype: randomization type for each allocation policy
+% rprob: randomization probability for each allocation policy
+% Tfixed: fixed stopping time for fixed stopping policy .
 %
 % OUTPUTS: 
 % rulename: string that summarizes the allocaiton policy or stopping time 
@@ -60,30 +61,30 @@ function [ rulename ] = AssignPolicyNames( functionname, functiontype, randprob,
     end
     if strcmp(rulename,'cKGstar')
        if functiontype == 1
-           rulename =  'cKG\fontsize{20}\ast';
+           rulename =  'cKG_\ast';
        else
-           rulename = 'cKG\fontsize{20}\ast';
+           rulename = 'cKG_\ast';
        end   
     end
     if strcmp(rulename,'cKG1')
        if functiontype == 1
-           rulename =  'cKG\fontsize{20}1';
+           rulename =  'cKG_1';
        else
-           rulename = 'cKG\fontsize{20}1';
+           rulename = 'cKG_1';
        end  
     end
     if strcmp(rulename,'cKGstarRatio')
        if functiontype == 1
-           rulename = 'cKG\fontsize{20}\ast';
+           rulename = 'cKG_\ast';
        else
-           rulename = 'cKG\fontsize{20}\ast';
+           rulename = 'cKG_\ast';
        end   
     end
     if strcmp(rulename,'cKG1Ratio')
        if functiontype == 1
-           rulename = 'cKG\fontsize{20}1';
+           rulename = 'cKG_1';
        else
-           rulename = 'cKG\fontsize{20}1';
+           rulename = 'cKG_1';
        end 
     end
     if strcmp(rulename,'IndESPb')
@@ -109,10 +110,14 @@ function [ rulename ] = AssignPolicyNames( functionname, functiontype, randprob,
     if strcmp(rulename,'Variance')
         rulename = 'Variance';
     end
-    if randprob >= 1
-        rulename = 'Random';
-    elseif randprob > 0
-        rulename = strcat(rulename, ' with p = ', randprob);
+    if functiontype == 1
+        if rprob >= 1
+            rulename = 'Random';
+        elseif rprob > 0 && rtype == 1
+            rulename = strcat(rulename, ' with p = ', num2str(rprob));
+        elseif rprob > 0 && rtype == 2
+            rulename = strcat(rulename, '-TTVS with p = ', num2str(rprob));
+        end
     end
 end
 

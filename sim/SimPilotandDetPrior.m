@@ -1,22 +1,17 @@
-function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64( parameters, samplingparameters, j)
+function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( parameters, stdpilot, thetav)
 %SimPilotandDetPrior
 % PURPOSE: Simulates a pilot dose-response data from the true theta and 
 % actual sampling variance, uses this data to estimate a prior
 % distribution using Algorithm 2 of Chick, Gans, Yapar (2020), modifies the
 % estimated prior distribution as 'robust' or 'tilted' if specified 
-% in samplingparameters.priortype.
-% BE CAREFUL that this function designed to work when NBASE = 10 and the 
-% pilot samples from 5 doses. This function might throw errors if NBASE 
-% and number of doses are different.
+% in parameters.priortype.
 %
 % INPUTS: 
 % parameters: struct, problem parameters are included as fields (See 
 %   ExampleProblemSetup.m or ExampleProblemSetupwithPilot.m for examples 
 %   of how to generate this struct)
-% samplingparameters: struct, parameters related to pilot simulation are 
-%    included as fields, see ExampleProblemSetupwithPilot.m for an example 
-%    of creating this struct
-% j: numeric scalar, the simulation replication we are in
+% stdpilot: a matrix of standardized normals, used for pilot study if crn is asked
+% thetav: actual means
 %
 % OUTPUTS: 
 % mu0: estimated prior mean vector
@@ -30,20 +25,15 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
 %   pilotdetails.higherthanN: fraction of times we added extra
 %       observations to pilot due to having unusually high efns
 %
-% SUGGESTED WORKFLOW: Uses pregenerated standard normal random variables to 
-% simulate the pilot data, call after calling SetRandomVars.m for 
-% pregeneration. SetRandomVars.m pregenerates 
-% values assuming NBASE = 10 and doses has length 5. 
-
 %% 
     %% 1.Do the base number NBASE observations for each dose i in the pilot. 
-    responses = zeros(samplingparameters.N,size(samplingparameters.indicestosample,2));
-    for i = 1:size(samplingparameters.indicestosample,2)
-        ind = samplingparameters.indicestosample(i);
-        responses(:,i) = parameters.doserespv(1:samplingparameters.N,i,j)*sqrt(parameters.naturelambdav(ind))+ parameters.thetav(ind);
+    responses = zeros(parameters.N,size(parameters.indicestosample,2));
+    for i = 1:size(parameters.indicestosample,2)
+        ind = parameters.indicestosample(i);
+        responses(:,i) = stdpilot(1:parameters.N,i)*sqrt(parameters.naturelambdav(ind))+ thetav(ind);
     end
 
-    data = [repmat(samplingparameters.doses(samplingparameters.indicestosample)',samplingparameters.N,1),reshape(responses',[],1)];
+    data = [repmat(parameters.doses(parameters.indicestosample)',parameters.N,1),reshape(responses',[],1)];
 
     % % Graph the data set created together with the true theta curve
     % figure
@@ -52,7 +42,7 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
     % scatter(data(:,1),data(:,2)) 
 
     %% 2.Fit GPR model and get estimates for parameters
-    [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRFit(data, samplingparameters.doses);
+    [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRFit(data, parameters.doses);
 
     %% 3. If the effective sample size (from GPR) of any of the arms tested 
     %  is >= NBASE*(number of arms in the pilot) OR the effective sample 
@@ -60,36 +50,33 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
     %  add 1 observation for each arm in the pilot. Recompute the GPR
     %  estimator,
     %  repeat until the sample size per arm in the pilot exceeds 2*NBASE.
-    NBASE = samplingparameters.N*size(samplingparameters.indicestosample,2);
+    NBASE = parameters.N*size(parameters.indicestosample,2);
     NofPilot = NBASE;
-    sigmaforsampled = predsigma(samplingparameters.indicestosample,samplingparameters.indicestosample);
+    sigmaforsampled = predsigma(parameters.indicestosample,parameters.indicestosample);
     efnsvec = predlambdav./diag(sigmaforsampled);
     addsample = 1;
     lessthanN = 0;
     higherthanfullN = 0;
-    %%% This portion assumes that is there are 5 doses to be sampled from
-    %%% doserespv matrix created in SetRandomVars needs to bigger if more 
-    %%% doses wants to be sampled from
-    while NofPilot < 2*NBASE && (min(efnsvec) < NofPilot/size(samplingparameters.indicestosample,2) || max(efnsvec) >= NofPilot)
-        lessthanN = lessthanN + (min(efnsvec) < NofPilot/size(samplingparameters.indicestosample,2)) ;
+    while NofPilot < 2*NBASE && (min(efnsvec) < NofPilot/size(parameters.indicestosample,2) || max(efnsvec) >= NofPilot)
+        lessthanN = lessthanN + (min(efnsvec) < NofPilot/size(parameters.indicestosample,2)) ;
         higherthanfullN =  higherthanfullN + (max(efnsvec) >= NofPilot);
-        for i = 1:size(samplingparameters.indicestosample,2)
-            ind = samplingparameters.indicestosample(i);
-            responses(samplingparameters.N+addsample,i) = parameters.doserespv(addsample,size(samplingparameters.indicestosample,2)+i,j)*sqrt(parameters.naturelambdav(ind))+ parameters.thetav(ind);
+        for i = 1:size(parameters.indicestosample,2)
+            ind = parameters.indicestosample(i);
+            responses(parameters.N+addsample,i) = stdpilot(parameters.N+addsample,i)*sqrt(parameters.naturelambdav(ind))+ thetav(ind);
         end
-        data = [repmat(samplingparameters.doses(samplingparameters.indicestosample)',samplingparameters.N+addsample,1),reshape(responses',[],1)];
+        data = [repmat(parameters.doses(parameters.indicestosample)',parameters.N+addsample,1),reshape(responses',[],1)];
 
-        [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRFit(data, samplingparameters.doses);
-        sigmaforsampled = predsigma(samplingparameters.indicestosample,samplingparameters.indicestosample);
+        [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRFit(data, parameters.doses);
+        sigmaforsampled = predsigma(parameters.indicestosample,parameters.indicestosample);
         efnsvec = predlambdav./diag(sigmaforsampled);
 
-        NofPilot = NofPilot + size(samplingparameters.indicestosample,2);
+        NofPilot = NofPilot + size(parameters.indicestosample,2);
         addsample = addsample + 1;
     end
-    
+
     %% 4. Use alternative fit if 2*NBASE is reached
     if max(efnsvec) >= NofPilot
-        [predmu, predsigma, predlambdav, ~, ~] = GPRAltFit(data, samplingparameters.doses, zeta, sigmasq, predlambdav);
+        [predmu, predsigma, predlambdav, ~, ~] = GPRAltFit(data, parameters.doses, zeta, sigmasq, predlambdav);
     end
     pilotdetails.samplesize = NofPilot;
     pilotdetails.lessthanNperarm = lessthanN/(addsample-1);
@@ -100,17 +87,17 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
     meanresp = mean(responses, 1);
 
     %%% Modify the estimated prior if needed
-    if strcmp(samplingparameters.priortype, 'gpr')
+    if strcmp(parameters.priortype, 'gpr')
         mu0=predmu;
         sigma0 = predsigma;
-    elseif strcmp(samplingparameters.priortype, 'robust')
-        z = samplingparameters.zalpha; %z_alpha in the paper
+    elseif strcmp(parameters.priortype, 'robust')
+        z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
         mu0 = (maxmu+z*maxSigma0sqrt)*ones(parameters.M,1);
         sigma0 = 4*predsigma;
-    elseif strcmp(samplingparameters.priortype, 'tilted')
-        z = samplingparameters.zalpha; %z_alpha in the paper
+    elseif strcmp(parameters.priortype, 'tilted')
+        z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
         mu0 = ones(parameters.M,1);
@@ -120,26 +107,22 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
         sigma0 = 4*predsigma;
     end
 
-    if samplingparameters.priorind ==1
-        sigma0 = diag(diag(sigma0));
-    end
-    
     lambdav = predlambdav*ones(1,parameters.M);
     efns = lambdav./diag(sigma0)';
     
-    if  samplingparameters.graphforprior == 1
+    if  parameters.graphforprior == 1
         %%%% Plotting three priors for a sample path
         % GPR
         mu0gpr=predmu;
         sigma0gpr = predsigma;
         %robust
-        z = samplingparameters.zalpha; %z_alpha in the paper
+        z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
         mu0robust = (maxmu+z*maxSigma0sqrt)*ones(parameters.M,1);
         sigma0robust = 4*predsigma;
         %tilted
-        z = samplingparameters.zalpha; %z_alpha in the paper
+        z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
         mu0tilted = ones(parameters.M,1);
@@ -149,13 +132,13 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPriorSec64
         sigma0tilted = 4*predsigma;
 
         ticks = strings(1,parameters.M);
-        ticks(samplingparameters.indicestosample(1)) = "0";
-        ticks(samplingparameters.indicestosample(2)) = "2";
-        ticks(samplingparameters.indicestosample(3)) = "4";
-        ticks(samplingparameters.indicestosample(4)) = "6";
-        ticks(samplingparameters.indicestosample(5)) = "8";
+        ticks(parameters.indicestosample(1)) = "0";
+        ticks(parameters.indicestosample(2)) = "2";
+        ticks(parameters.indicestosample(3)) = "4";
+        ticks(parameters.indicestosample(4)) = "6";
+        ticks(parameters.indicestosample(5)) = "8";
 
-        doses = samplingparameters.doses;
+        doses = parameters.doses;
         figure
         h1 = subplot(1,3,1);
         hold on

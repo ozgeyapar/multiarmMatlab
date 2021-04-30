@@ -1,4 +1,4 @@
-function [ stop ] = StoppingFixed(parameters, t)
+function [ stop ] = StoppingFixed(Tfixed, t)
 %StoppingFixed
 % PURPOSE: Implements the fixed stopping time, the fixed sample size is 
 % defined in parameters input as Tfixed. Returns 1 for stopping and 0 for 
@@ -16,7 +16,7 @@ function [ stop ] = StoppingFixed(parameters, t)
 % generating the 'parameters' input
 
 %%
-if t<parameters.Tfixed
+if t<Tfixed
     stop = 0;
 else
     stop = 1;

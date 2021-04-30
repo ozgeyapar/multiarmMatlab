@@ -1,6 +1,22 @@
 function [meandOCatgivenT, sedOCatgivenT] = CalculateCIofOC( result, atgivenT )
 %CalculateCIofOC
-
+% PURPOSE: Calculate the mean error of difference and standard error of the 
+% difference at a given period between the opportunity cost of each
+% policy simulated. Used for 
+% simulations that compare allocation policies
+% when each is used with the same fixed stopping time.
+%
+% INPUTS: 
+% result: struct array that contains OC at each period, see PlotFig1.m and
+%   SimforFig1.m for examples of how to create result struct
+% atgivenT: numerical, calculate the statistics for which period 
+%
+% OUTPUTS: 
+% meandOCatgivenT: a matrix of mean difference among each allocation policy
+%   pair
+% sedOCatgivenT: a matrix of standard error of differences among each 
+%   allocation policy pair
+%
 %%
     NUMOFPPOL = result.nofpols;
     NUMOFREPS  = result.nofreps;

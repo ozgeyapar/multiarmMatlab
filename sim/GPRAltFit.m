@@ -39,8 +39,7 @@ function [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRAltFit(data, doses
     'OptimizeHyperparameters','KernelScale','HyperparameterOptimizationOptions',...
     struct('AcquisitionFunctionName','expected-improvement-plus', 'ShowPlots', false, 'Verbose', 0));
 
-    doses = samplingparameters.doses;
-    M = size(doses,2);
+    M = size(doses,1);
     dosesfromdata = data(:,1);
     N = size(dosesfromdata,1);
 
@@ -72,6 +71,7 @@ function [predmu, predsigma, predlambdav, zeta, sigmasq] = GPRAltFit(data, doses
 
     %predicted parameters
     predsigma = Kxstarxstar - Kxxstar*(Kstarstarnoise\Kxxstar'); 
+
     if isempty(gprMdl.Beta)
         predbaselevel = 0;
     else

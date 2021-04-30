@@ -1,25 +1,24 @@
 % ExamplecallingcPDEs.m:
 % PURPOSE: A macro to show how to get EVI values estimated with cPDE, 
-% cPDELower and cPDEUpper, how to get the arm from cPDE, cPDELower and 
-% cPDEUpper allocation policies, and how to get whether cPDE, cPDELower and 
-% cPDEUpper stopping times stop or continue for an example problem. 
-%
-% WORKFLOW: SetSolFiles.m should be run once per machine beforehand to 
-% generate the standardized PDE solution to be used for cPDELower and 
-% cPDEUpper.
+% cPDELower and cPDEUpper for an example problem. 
 
+%% INITIALIZATION
+%%% Set directories
+SetPaths
+
+%%% Load Standard Solutions
+PDELocalInit;
+[cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
 %% DEFINE THE EXAMPLE PROBLEM
 M = 20; %number of alternatives
-parameters.M = M;
-parameters.I = zeros(M,1); %fixed implementation cost
-parameters.P = 10^4; %number of patients in the population
-parameters.lambdav = (0.1^2)*ones(1,M); %sampling variance
-parameters.c = 1*ones(1,M); %cost per sample
-parameters.delta = 1; %undiscounted
+I = zeros(M,1); %fixed implementation cost
+P = 10^4; %number of patients in the population
+lambdav = (0.1^2)*ones(1,M); %sampling variance
+c = 1*ones(1,M); %cost per sample
+delta = 1; %undiscounted
 
 %to generate a prior distribution
 mu0 = zeros(M,1);
-rng default
 alphaval = 100;
 beta0 = 1/2;
 [sigma0,~] = PowExpCov(beta0,(M-1)/sqrt(alphaval),2,M,1); %I use PowExpCov 
@@ -31,6 +30,13 @@ beta0 = 1/2;
 % %        sigma0(i,j) = beta0*exp(-alpha0*(i-j)^2);
 % %    end
 % % end
+
+%%% Call SetParametersFunc to setup the struct and check inputs
+list = {'M',M,'lambdav',lambdav,'mu0',mu0,'sigma0',sigma0,'efns',lambdav./diag(sigma0)','P',P,'I',I,'c',c, 'delta', delta};
+[ parameters, ~ ] = SetParametersFunc( list );
+
+%%% Sample a couple of times to get an example prior distribution
+rng default
 thetav = mvnrnd(mu0,sigma0);
 mucur = mu0;
 sigmacur = sigma0;
@@ -40,26 +46,13 @@ for j = 1:3
     [mucur,sigmacur] = BayesianUpdate(mucur,sigmacur,i, y, parameters.lambdav(i));
 end
 
-%% Getting EVI value of arm i using cPDELower and cPDEUpper
+%% Getting EVI value of arm i using cPDELower, cPDEUpper and cPDE
 i = 5; %get evi of arm i
-% Load general standardized PDE solution 
-PDELocalInit;
-[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
 
 % To get the evi from cPDELower and cPDEUpper for an undiscounted problem
-evilower = cPDELowerUndis( cfSoln, parameters, mucur, sigmacur, i )
-eviupper = cPDEUpperUndisNoOpt( cfSoln, parameters, mucur, sigmacur, i )
+evilower = cPDELowerUndis( cfSoln, parameters, mucur, sigmacur, i ) % returns 132.2694
+eviupper = cPDEUpperUndisNoOpt( cfSoln, parameters, mucur, sigmacur, i ) % returns 132.5960
 
-%% Getting EVI value of arm i using cPDE
-evi = cPDEUndis( parameters, mucur, sigmacur, i )
-
-%% Allocation policies (returns the index of the arm)
-allpollower = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur ) %cPDELower
-allpolupper = AllocationcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur ) %cPDEUpper without optimization
-allpolcpde = AllocationcPDE( parameters, mucur, sigmacur ) %cPDE
-
-%% Stopping times (1 for stop, 0 for continue)
-stoppollower = StoppingcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur ) %cPDELower
-stoppolupper = StoppingcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur ) %cPDEUpper without optimization
-stoppolcpdeheu = StoppingcPDEHeu( cfSoln, cgSoln, parameters, mucur, sigmacur, 1) %cPDE
+%  To get the evi from cPDE for an undiscounted problem
+evi = cPDEUndis( parameters, mucur, sigmacur, i ) % returns 132.4101
 

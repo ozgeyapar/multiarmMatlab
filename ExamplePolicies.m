@@ -1,10 +1,18 @@
 % ExamplePolicies.m:
 % PURPOSE: A macro to show how to call some allocation polciies and 
-% stopping times for the example problem from ExampleProblemSetup.m.
+% stopping times for an example problem.
 %
 % WORKFLOW: SetSolFiles.m should be run once per machine beforehand to 
 % generate the standardized PDE solution.
 %
+%% INITIALIZATION
+%%% Set directories
+SetPaths
+
+%%% Load Standard Solutions
+PDELocalInit;
+[cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
+
 %% SET THE EXAMPLE PROBLEM
 %%% Problem parameters
 M = 20; %number of arms
@@ -14,14 +22,13 @@ mu0=zeros(M,1); %vector of prior means
 P = 10^6; %population size
 I = zeros(M,1); % fixed implementation cost
 c = ones(1,M); %variable cost of sampling
-Tfixed = 200; % Fixed sample size that will be used by the fixed stopping time
 delta = 1; %discount rate
 
 %%% Call SetParametersFunc to setup the struct and check inputs
-list = {'M',M,'lambdav',lambdav,'mu0',mu0,'sigma0',sigma0,'efns',lambdav./diag(sigma0)','P',P,'I',I,'c',c, 'delta', delta, 'pdetieoption', 'kgstar', 'Tfixed', Tfixed};
+list = {'M',M,'lambdav',lambdav,'mu0',mu0,'sigma0',sigma0,'efns',lambdav./diag(sigma0)','P',P,'I',I,'c',c, 'delta', delta};
 [ parameters, ~ ] = SetParametersFunc( list );
 
-%% Current prior distribution
+%%% Sample a couple of times to get an example prior distribution
 rng default
 thetav = mvnrnd(parameters.mu0,parameters.sigma0);
 mucur = parameters.mu0;
@@ -33,22 +40,18 @@ for j = 1:2
 end
 
 %% Allocation policies that use standardized solution
-% Load general standardized PDE solution 
-PDELocalInit;
-[cgSoln, cfSoln, cgOn, cfOn] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
-
-% Call the allocation policy, parameters variable is defined 
-% in ExampleProblemSetup.m
-[ i] = AllocationIndESPcapB( cfSoln, parameters, mucur, sigmacur )
-[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur )
-[ i] = AllocationcPDELowerTTVS( cfSoln, cgSoln, parameters, mucur, sigmacur, 0.2 )
-[ i] = AllocationcPDELowerUnif( cfSoln, cgSoln, parameters, mucur, sigmacur, 0.2 )
-[ i ] = AllocationcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur )
-[ i ] = AllocationcPDEUpperOpt( cfSoln, cgSoln, parameters, mucur, sigmacur )
+% arms returned by below allocation policies are: 19, 1, 19, 1, 7, 6
+rng default
+[ i] = AllocationIndESPcapB( cfSoln, parameters, mucur, sigmacur, 0, -1 ) % deterministic
+[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1) % deterministic
+[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 1, 0.2 )% uniform randomization with prob 0.2
+[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 1, 0.4 )% TTVS randomization with prob 0.2
+[ i ] = AllocationcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1 ) % deterministic
+[ i ] = AllocationcPDEUpperOpt( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1) % deterministic
 
 %% Stopping times that use standardized solution
-% General standardized PDE solution is loaded above
-[ stop ] = StoppingcPDEHeu( cfSoln, cgSoln, parameters, mucur, sigmacur, 2)
+% all stopping policies should return 0 (do not stop)
+[ stop ] = StoppingcPDEHeu( cfSoln, cgSoln, parameters, mucur, sigmacur)
 [ stop ] = StoppingcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur )
 [ stop ] = StoppingcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur )
 [ stop ] = StoppingcPDEUpperOpt( cfSoln, cgSoln, parameters, mucur, sigmacur)

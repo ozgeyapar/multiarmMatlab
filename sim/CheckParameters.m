@@ -5,17 +5,14 @@ function [ rval ] = CheckParameters( parameters )
 % called in SetParametersFunc.m
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 %
 % OUTPUTS: 
 % rval: 1 if everything is fine, 0 if there is an issue with parameters
-%
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
+
 
 %%
-rval =1;
+rval = 1;
 if(~isscalar(parameters.M)||~isscalar(parameters.P))
     warning('M and P has to be scalars.');
     rval = 0;
