@@ -1,6 +1,29 @@
 % ReplicateCGY.m:
 % PURPOSE: A macro with the code required to generate the figures and tables
 % for correlated multiarm paper (Chick, Gans, Yapar (2020)).
+%
+% Here is the list of allocation and stopping policies that can be tested
+% aPDEUpper: cPDEUpper allocation policy with optimized alphas
+% aPDEUpperNO: cPDEUpper allocation policy with equal alphas
+% aPDELower: cPDELower allocation policy
+% aVar: Allocation policy based on variance of each arm
+% aCKGstar: cKGstar allocation policy
+% aCKG: cKG1 allocation policy
+% aESPb: ESPb allocation policy
+% aESPB: ESPB allocation policy
+% aEqual: Equal (round-robin) allocation policy
+% aPDE: cPDE allocation policy
+% aRandom: Random allocation policy
+% 
+% sPDEUpper: cPDEUpper stopping policy with optimized alphas
+% sPDEUpperNO: cPDEUpper stopping policy with equal alphas
+% sPDELower: cPDELower stopping policy
+% sfixed: Fixed stopping policy
+% sCKGstar: cKGstar stopping policy
+% sCKG: cKG1 stopping policy
+% sESPb: ESPb stopping policy
+% sPDE: cPDE stopping policy
+% sPDEHeu: cPDE heuristic stopping policy, uses cPDELower and cPDEUpper for faster computation
 
 %% INITIALIZATION
 %%% Set directories
@@ -33,7 +56,7 @@ rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
 Tfixed = [50,50,50,50]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 
 % For Figure 1 in Section 6.2 
-% policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aKGStarLower:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
+% policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aCKGstar:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
 % rprob = [-1,-1,-1, -1, -1, -1, -1, -1, -1]; % randomization probability, negative if deterministic
 % rtype = [0,0,0,0,0,0,0,0,0]; %1 for uniform, 2 for TTVS
 % Tfixed = 100*ones(9,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
@@ -79,7 +102,7 @@ rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
 Tfixed = [50,50,50,50]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 
 % For Table 1 in Section 6.3
-% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sKGStarLower:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sKGStarLower:aVar:sfixed:aVar:sfixed'; % policies to include
+% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
 % rprob = -1*ones(15,1); % randomization probability, negative if deterministic
 % rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
 % Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
@@ -99,7 +122,7 @@ graphforprior = 0; %if 1, generates a figure that shows the prior for each pilot
 zalpha = 1/2; % used in robust and tilted priors
 
 %%% Simulation details
-settings.NUMOFREPS = 1000; %number of replications for the simulation, 1000 in the paper
+settings.NUMOFREPS = 5; %number of replications for the simulation, 1000 in the paper
 settings.filename = ''; %name of the figure file if it will be saved
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
 settings.seed = 487429276; % seed to be used for random number generation
@@ -115,7 +138,7 @@ rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
 Tfixed = [50,50,50,50]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 
 % For Table 1 in Section 6.3
-% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sKGStarLower:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sKGStarLower:aVar:sfixed:aVar:sfixed'; % policies to include
+% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
 % rprob = -1*ones(15,1); % randomization probability, negative if deterministic
 % rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
 % Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used

@@ -14,7 +14,7 @@ Below stages should be implemented once per machine to create code to describe t
 3. Install the code from this repo. (Default folder name is "multiarmMatlab". If the folder name is different, either change it to "multiarmMatlab" or modify following steps according to your folder name.)
 4. Put multarmcode, pdestop, and matlabKG folders into the same directory. 
 5. Make multiarmMatlab folder the current directory. 
-6. Create a file called **SetPaths.m**, which has the following:
+6. Create a file called **SetPaths.m**, which has the following lines of codes, and save it to the same directory as ReplicateCGY.m:
 ```
     pdecorrfolder = 'multiarmMatlab';
     pdecodefolder = 'pdestop';
