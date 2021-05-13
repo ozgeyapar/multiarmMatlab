@@ -1,4 +1,4 @@
-function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtype, rprob, Tfixed, parameters, thetav, stdnoise, settings)
+function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtype, rprob, Tfixed, parameters, thetav, stdnoise, stdrand, settings)
 %SimulationFunc
 % PURPOSE: Runs one simulation replication for a given policy.
 %
@@ -16,6 +16,7 @@ function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtyp
 % parameters: struct, holds the problem parameters
 % thetav: vector of actual means
 % stdnoise: a matrix of standardized normals, used for observation noise if crn is asked
+% stdrand: a matrix of uniform between 1 and 0, used for randomization if crn is asked
 % settings: struct of simulation settings such as bound, crn etc.
 
 % OUTPUTS: 
@@ -44,8 +45,13 @@ function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtyp
          if t == Tfixed - 1 %record if stops because we are at the boundary
             stoppedatbound = 1;
          end
-         i = allpolicy(cfSoln, cgSoln, parameters, mucur, sigmacur, t, rtype, rprob); %alternative we will sample from
-         
+         if (settings.crn == 1)
+            parameters.randomizeornot = stdrand(t+1);
+            i = allpolicy(cfSoln, cgSoln, parameters, mucur, sigmacur, t, rtype, rprob); %alternative we will sample from
+         else
+            parameters.randomizeornot = rand;
+            i = allpolicy(cfSoln, cgSoln, parameters, mucur, sigmacur, t, rtype, rprob); %alternative we will sample from 
+         end
          count = sum(alt(:)==i)+1; %how many times we have called alternetive i so far
          
          if (settings.crn == 0) %random observations, no crn

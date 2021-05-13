@@ -107,7 +107,7 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
         sigma0 = 4*predsigma;
     end
 
-    lambdav = predlambdav*ones(1,parameters.M);
+    lambdav = predlambdav*ones(parameters.M,1);
     efns = lambdav./diag(sigma0)';
     
     if  parameters.graphforprior == 1

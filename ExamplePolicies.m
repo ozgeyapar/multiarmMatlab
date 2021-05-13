@@ -16,12 +16,12 @@ PDELocalInit;
 %% SET THE EXAMPLE PROBLEM
 %%% Problem parameters
 M = 20; %number of arms
-lambdav = 10^6*ones(1,M); %sampling variance
+lambdav = 10^6*ones(M,1); %sampling variance
 mu0=zeros(M,1); %vector of prior means
 [sigma0,~] = PowExpCov(1/2,(M-1)/sqrt(16),2,M,1); %matrix of prior coviarance
 P = 10^6; %population size
 I = zeros(M,1); % fixed implementation cost
-c = ones(1,M); %variable cost of sampling
+c = ones(M,1); %variable cost of sampling
 delta = 1; %discount rate
 
 %%% Call SetParametersFunc to setup the struct and check inputs
@@ -45,7 +45,7 @@ rng default
 [ i] = AllocationIndESPcapB( cfSoln, parameters, mucur, sigmacur, 0, -1 ) % deterministic
 [ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1) % deterministic
 [ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 1, 0.2 )% uniform randomization with prob 0.2
-[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 1, 0.4 )% TTVS randomization with prob 0.2
+[ i] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, 2, 0.2 )% TTVS randomization with prob 0.2
 [ i ] = AllocationcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1 ) % deterministic
 [ i ] = AllocationcPDEUpperOpt( cfSoln, cgSoln, parameters, mucur, sigmacur, 0, -1) % deterministic
 

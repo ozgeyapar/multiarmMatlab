@@ -5,9 +5,7 @@ function [ evi] = cPDELowerUndis( undissol, parameters, mu, sigma, i )
 %
 % INPUTS: 
 % undissol: variable which contains the standardized solution
-%   for undiscounted problem. SetSolFiles.m generates the standardized
-%   solution and PDELoadSolnFiles is used to load it. See
-%   AllocationcPDELower.m for more details.
+%   for undiscounted problem. 
 % parameters: struct, problem parameters are included as fields (See 
 %   ExampleProblemSetup.m for an example of how to generate this struct)
 % mu: numerical vector that contains the prior mean vector

@@ -36,12 +36,12 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
     end 
     NUMOFPOL = length(policyfuncs(:,1)); %Number of policies to compute
     
-    %% Run simulations for each allocation policy
+    %% Run simulations for each policy
     for j = 1:NUMOFPOL 
         results.policy(j).allrule = AssignPolicyNames(func2str(policyfuncs{j,1}), 1, rtype(j), rprob(j), Tfixed(j)); %Allocation rule
         results.policy(j).stoprule = AssignPolicyNames(func2str(policyfuncs{j,2}), 2, rtype(j), rprob(j), Tfixed(j)); %Stopping rule
     end
-    [thetastream,noisestream,pilotstream, tiestream] = RandStream.create('mrg32k3a','NumStreams',4, 'Seed', settings.seed);
+    [thetastream,noisestream,pilotstream,randstream, tiestream] = RandStream.create('mrg32k3a','NumStreams',5,'Seed', settings.seed);
     for n = 1:NUMOFREPS
         % Generate random variables to be used in simulation run for CRN
         % CRN or not for observation noise
@@ -65,6 +65,14 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
             stdpilot = [];
         end
         
+        % CRN or not for randomized allocation rules
+        if settings.crn == 1 && any(rprob > 0) && any(rprob < 1)
+            stdrand = rand(randstream,settings.BOUND,1); 
+        else
+            stdrand = [];
+        end
+        
+        % Generate the actual means
         thetav = TrueThetaCreator( parameters, stdtheta, settings.crn); %actual thetas
         
         %Run pilot to get the prior and sampling variance
@@ -72,8 +80,9 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
             [ parameters.mu0, parameters.sigma0, parameters.lambdav, parameters.efns, parameters.pilotdetails ] = SimPilotandDetPrior( parameters, stdpilot, thetav);
         end
         RandStream.setGlobalStream(tiestream)
+        
         for  j = 1:NUMOFPOL
-            [results.policy(j).detailed(n)] = SimulationFunc( cfSoln, cgSoln, policyfuncs{j,1}, policyfuncs{j,2}, rtype(j), rprob(j), Tfixed(j), parameters, thetav, stdnoise, settings);
+            [results.policy(j).detailed(n)] = SimulationFunc( cfSoln, cgSoln, policyfuncs{j,1}, policyfuncs{j,2}, rtype(j), rprob(j), Tfixed(j), parameters, thetav, stdnoise, stdrand, settings);
         end
     end
     results.nofreps = NUMOFREPS;

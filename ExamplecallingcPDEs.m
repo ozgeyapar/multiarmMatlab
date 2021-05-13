@@ -13,8 +13,8 @@ PDELocalInit;
 M = 20; %number of alternatives
 I = zeros(M,1); %fixed implementation cost
 P = 10^4; %number of patients in the population
-lambdav = (0.1^2)*ones(1,M); %sampling variance
-c = 1*ones(1,M); %cost per sample
+lambdav = (0.1^2)*ones(M,1); %sampling variance
+c = 1*ones(M,1); %cost per sample
 delta = 1; %undiscounted
 
 %to generate a prior distribution

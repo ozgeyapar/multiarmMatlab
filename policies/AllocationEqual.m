@@ -5,15 +5,12 @@
 % (2020).
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
 % t: numerical scalar, current period, to keep track of the round robin order
 %
 % OUTPUTS: 
 % i: index of the arm to be sampled
-%
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
+
 
 %%
     i = mod(t+1, parameters.M);

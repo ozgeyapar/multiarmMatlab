@@ -1,45 +1,56 @@
-ReplicateCGY.m: A macro with the code required to generate the figures and tables for correlated multiarm paper (Chick, Gans, Yapar (2020)).
-ExamplePolicies.m: A macro to show how to call some allocation polciies and stopping times for an example problem.
+- ReplicateCGY.m: A macro with the code required to generate the figures and tables for correlated multiarm paper (Chick, Gans, Yapar (2020)).
+- ExamplePolicies.m: A macro to show how to call some allocation polciies and stopping times for an example problem.
+- ExamplecallingcPDEs.m: A macro to show how to get EVI values estimated with cPDE, cPDELower and cPDEUpper for an example problem.
 
-SetPaths.m: Updates the matlab path variable so that pdestop, matlabKG and multiarmMatlab can all be accessed.
-SetSolFiles.m: A macro to generate the standardized PDE solution
+- SetPaths.m: Updates the matlab path variable so that pdestop, matlabKG and multiarmMatlab can all be accessed.
+- SetSolFiles.m: A macro to generate the standardized PDE solution
 
 UNDER CGYREP FOLDER: This folder contains code that is related to replicating CGY2020.
-GenerateOCFig.m: Plots the log(E[OC]) for each allocation policy and saves the plots as .fig and .eps files if asked. 
-GenerateTCTable.m: Generates a table that contains the statistical summary of simulation results for each policy. 
-ProblemSetup80Arms.m: Generates the parameters struct that contains the parameters for the 80 arm problem in Chick, Gans, Yapar (2020)
-ProblemSetupDoseCaseStudy.m: Generates the parameters struct that contains the parameters for the dose finding case study problem in Chick, Gans, Yapar (2020)
-CalculateCIofOC.m: Calculate the mean error of difference and standard error of the difference at a given period between the opportunity cost of each policy simulated
+- CalculateCIofOC.m: Calculate the mean error of difference and standard error of the difference at a given period between the opportunity cost of each policy simulated
+- GenerateEVIandCPUvsNumofArmsFig.m: Generates figures that depict EVI and computation times for the syntetic problem with different number of arms for allocation policies cKG1, cKG*, cPDELower, cPDEUpper, and cPDE.
+- GenerateEVIvsArmsFig.m: Plots EVIs approximated by cPDELower, cPDEUpper, cPDE, cKG1 and cKG* methods for across all arms given as input.
+- GenerateEVIvsmu0Fig.m: Plots EVIs approximated by cPDELower, cPDEUpper, cPDE, cKG1 and cKG* methods for mu0 values arm i given as inputs.
+- GenerateOCFig.m: Plots the log(E[OC]) for each allocation policy and saves the plots as .fig and .eps files if asked.
+- GenerateOCTCSCFig.m: Plots the E[OC], E[SC] and E[TC] for the first policy in the result input
+- GeneratePowerCurve.m: Plots a power curve for given deltas (difference between the mean of best arm and the second best arm) and policies.
+- GenerateTCTable.m: Generates a table that contains the statistical summary of simulation results for each policy.
+- ProblemSetup3Arms.m: Generates the parameters struct that contains the parameters for the 3 arm problem in Appendix C2 of Chick, Gans, Yapar (2020) 
+- ProblemSetupSynthetic.m: Generates the parameters struct that contains the parameters for the synthetic dose-finding problem in Chick, Gans, Yapar (2020)
+- ProblemSetupDoseCaseStudy.m: Generates the parameters struct that contains the parameters for the dose finding case study problem in Chick, Gans, Yapar (2020)
+- ProblemSetupTriangular.m: Generates the parameters struct that contains the parameters for the triangular problem in Chick, Gans, Yapar (2020) for given difference between best and second best
 
 UNDER PDECORR FOLDER: These files are created to adapt the code in pdestop to calculate the EVI for a correlation problem, they are used together with pdestop code to calculate cPDE.
 
 UNDER POLICIES FOLDER: These files are used to calculate allocation and stopping decisions.
-Allocation*.m returns the allocation decision provided by the allocation policy implied by the name of the file. If the allocation policy is EVI-based, there are two arguments that control randomization. If randtype == 1, uniform randomization is used and If randtype == 2, TTVS is used. And randprob contorls the probability of randomization (p in the paper).
-Stopping*.m returns the stopping decision provided by the stopping policy implied by the name of the file.
-cKG*.m, cPDE*.m returns the EVI values using the approximation method implied in the name.
+- AllocationBasedonEVI.m: Takes the EVI approximations as an input and returns an arm to be sampled from.
+- AllocationTieBreaker.m: Used to break the ties when an allocation policy estimates the same EVI for multiple arms.
+- Allocation*.m (except above two) returns the allocation decision provided by the allocation policy implied by the name of the file. If the allocation policy is EVI-based, there are two arguments that control randomization. If randtype == 1, uniform randomization is used and If randtype == 2, TTVS is used. And randprob contorls the probability of randomization (p in the paper).
+- Stopping*.m returns the stopping decision provided by the stopping policy implied by the name of the file.
+- cKG*.m, cPDE*.m returns the EVI values using the approximation method implied in the name.
 
 UNDER SIM FOLDER: These files are related to the Monte Carlo Simulation.
-SetParametersFunc.m: Creates a struct array which includes the problem parameters
-- CheckParameters.m: Checks the validity of parameters that is created by SetParametersFunc.m
+- SetParametersFunc.m: Creates a struct array which includes the problem parameters
+-- CheckParameters.m: Checks the validity of parameters that is created by SetParametersFunc.m
 
-SimSetupandRunFunc.m: Main file that runs the simulation replications for a given problem.
-- SimulationFunc.m: Runs one simulation replication.
-- TrueThetaCreator.m: Generates the ground truth to be used in the simulation replication based on problem parameters.
-- DefineRules.m: A macro to define funciton handles for allocation policies and stopping times as function handles
-- AssignPolicyNames.m: Generates a name for allocation policy or stopping time to be used in legends, tables etc.
+- SimSetupandRunFunc.m: Main file that runs the simulation replications for a given problem.
+-- SimulationFunc.m: Runs one simulation replication.
+-- TrueThetaCreator.m: Generates the ground truth to be used in the simulation replication based on problem parameters.
+-- DefineRules.m: A macro to define funciton handles for allocation policies and stopping times as function handles
+-- AssignPolicyNames.m: Generates a name for allocation policy or stopping time to be used in legends, tables etc.
 
-SimPilotandDetPrior.m: Simulates a pilot dose-response data from the true theta and actual sampling variance, uses this data to estimate a prior distribution using Algorithm 2 of Chick, Gans, Yapar (2020)
-- GPRFit.m: Implements the 'Fit' stage of Algorithm 2 of Chick, Gans, Yapar (2020). 
-- GPRAltFit.m: Implements the 'Alternative Fit' stage of Algorithm 2 of Chick, Gans, Yapar (2020).
+- SimPilotandDetPrior.m: Simulates a pilot dose-response data from the true theta and actual sampling variance, uses this data to estimate a prior distribution using Algorithm 2 of Chick, Gans, Yapar (2020)
+-- GPRFit.m: Implements the 'Fit' stage of Algorithm 2 of Chick, Gans, Yapar (2020). 
+-- GPRAltFit.m: Implements the 'Alternative Fit' stage of Algorithm 2 of Chick, Gans, Yapar (2020).
 
 UNDER TOOLS FOLDER: 
-tools/BayesianUpdate.m (Function): Updates Multivariate Normal Distribution prior when we sample from arm i and obtain sample y 
-tools/getybar (Function): Calculates mean of samples (ybar) from the posterior of i at t+tau. Called in nowhere
-tools/logPsifunc (Function): Computes log(E[(Z-s)^+]) = log(normpdf(s)-s*(1-normcdf(s))) for a scalar positive s. Called in cKG1DisRatio.m, cKG1UndisRatio.m, cKGstarDisRatio.m, cKGstarDisRatio.m, cKGstarUndisRatio.m, cKGstarUndisRatio.m
-tools/logvarfixedbeta (Function): Returns the log of the variance of mu_i^(t+\betavar)-mu_i^t for a fixed betavar. Called in cKG1DisRatio.m, cKG1UndisRatio.m, cKGstarDisRatio.m, cKGstarDisRatio.m, cKGstarUndisRatio.m, cKGstarUndisRatio.m
-tools/Psifunc (Function): Calculates  E[(Z-s)^+] = normpdf(s) - s*(1-normcdf(s)) for a scalar positive s. Called in cKG1Dis.m, cKG1Undis.m, cKGstarDis.m, cKGstarDis.m, cKGstarUndis.m, cKGstarUndis.m
-tools/SherWood (Function): Computes inv(A + uv'). Called in nowhere
-tools/SortAlternatives (Function): Reorders both vectors so that b is in ascending order, and removes elements with duplicate b values. Called in TransformtoLinearVersion.m
-tools/TransformtoLinearVersion (Function): Converts expected maximum of posterior means to the form of a{g(0)}+\b{g(0)} Z_i^T + \sum_{l=1}^{Mprime-1} (b{l+1}-b{l}) (-|d{l}|+Z_i^T)^+ where g(0) is the current maximum and Z_i^T is a random variable. Called in PlotsAppC.m, cKG1Dis.m, cKG1DisRatio.m, cKG1Undis.m, cKG1UndisRatio.m, cKGstarDis.m, cKGstarDisRatio.m, cKGstarUndis.m, cKGstarUndisRatio.m, cPDELowerDis.m, cPDELowerUndis.m, cPDEUndis.m, cPDEUpperDis.m, cPDEUpperUndisNoOpt.m, cPDEUpperUndisOpt.m, FuncAppCEVIandCompTime.m
-tools/varfixedbeta (Function): Returns the variance of mu_i^(t+\betavar)-mu_i^t for a fixed betavar. Called in cKG1Dis.m, cKG1DisRatio.m, cKG1Undis.m, cKG1UndisRatio.m, cKGstarDis.m, cKGstarDis.m, cKGstarDisRatio.m, cKGstarDisRatio.m, cKGstarUndis.m, cKGstarUndis.m, cKGstarUndisRatio.m, cKGstarUndisRatio.m
+- BayesianUpdate: Updates Multivariate Normal Distribution prior when we sample from arm i and obtain sample y 
+- CheckandCreateDir: Checks if the inputted directory exists, if it does not, it creates the directory
+- getybar: Calculates mean of samples (ybar) from the posterior of i at t+tau.
+- logPsifunc: Computes log(E[(Z-s)^+]) = log(normpdf(s)-s*(1-normcdf(s))) for a scalar positive s.
+- logvarfixedbeta: Returns the log of the variance of mu_i^(t+\betavar)-mu_i^t for a fixed betavar. 
+- Psifunc: Calculates  E[(Z-s)^+] = normpdf(s) - s*(1-normcdf(s)) for a scalar positive s. 
+- SherWood: Computes inv(A + uv'). 
+- SortAlternatives: Reorders both vectors so that b is in ascending order, and removes elements with duplicate b values.
+- TransformtoLinearVersion: Converts expected maximum of posterior means to the form of a{g(0)}+\b{g(0)} Z_i^T + \sum_{l=1}^{Mprime-1} (b{l+1}-b{l}) (-|d{l}|+Z_i^T)^+ where g(0) is the current maximum and Z_i^T is a random variable.
+- varfixedbeta: Returns the variance of mu_i^(t+\betavar)-mu_i^t for a fixed betavar.
 

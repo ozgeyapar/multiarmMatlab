@@ -31,11 +31,11 @@ function [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, za
     thetav = Evalue + Tvalue;
     
     naturelambda = 4.5*(2000^2);
-    naturelambdav = naturelambda*ones(1,M);
+    naturelambdav = naturelambda*ones(M,1);
     
     P = 2000000*0.1; 
     I = zeros(M,1); % zero fixed cost
-    c = 8500*ones(1,M);
+    c = 8500*ones(M,1);
     delta=1; % undiscounted
     
     %Pilot study details
@@ -44,7 +44,7 @@ function [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, za
         lambda = 1; %will be calculated from the pilot
         sigma0 = eye(M); %will be calculated from the pilot
         mu0 = zeros(M,1); %will be calculated from the pilot
-        lambdav = lambda*ones(1,M);
+        lambdav = lambda*ones(M,1);
         efns = lambdav./diag(sigma0)';
     end
     indicestosample = [1,5,9,13,17];

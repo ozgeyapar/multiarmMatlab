@@ -4,8 +4,7 @@ function [ i ] = AllocationTieBreaker( parameters, ind, muin, sigmain, option)
 % same EVI for multiple arms.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
 % ind: indices of the arms that the allocation policy tied among
 % muin: numerical vector that contains the prior mean vector
 % sigmain: numerical matrix that contains the prior covariance matrix
@@ -24,7 +23,7 @@ function [ i ] = AllocationTieBreaker( parameters, ind, muin, sigmain, option)
 % OUTPUTS: 
 % i: index of the arm to be sampled
 %
-% WORKFLOW: Called in all Allocation* files except AllocationEqual
+% WORKFLOW: Called in Allocation* files
 %%
 if strcmp(option, 'random')
     %use default: random

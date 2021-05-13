@@ -1,9 +1,10 @@
-function [ parameters ] = ProblemSetup80Arms( alphaval, pval)
-%ProblemSetup80Arms 
-% PURPOSE: Generates the parameters struct that contains the
-% parameters for the 80 arm problem in Chick, Gans, Yapar (2020)
+function [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval)
+%ProblemSetupSynthetic 
+% PURPOSE: Generates the parameters struct that contains the parameters for 
+% the synthetic dose-finding problem in Chick, Gans, Yapar (2020)
 %
 % INPUTS: 
+% M: Number of arms in the problem
 % alphaval: for alpha = alphaval/(M-1)^2
 % pval: for P = 10^pval
 
@@ -11,12 +12,11 @@ function [ parameters ] = ProblemSetup80Arms( alphaval, pval)
 % parameters: struct, holds the problem parameters
 
     %% Generate the problem
-    M = 80;
     P = 10^pval;
     I = zeros(M,1); %zero fixed cost
-    c = 1*ones(1,M);
+    c = 1*ones(M,1);
     delta = 1; % undiscounted
-    lambdav = 0.01*ones(1,M);
+    lambdav = 0.01*ones(M,1);
  
     %Define the modeler's prior on thetas
     mu0=zeros(M,1);

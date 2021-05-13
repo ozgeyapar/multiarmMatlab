@@ -1,6 +1,9 @@
 function CheckandCreateDir( foldertosave )
-%CHECKANDCREATEDIR Summary of this function goes here
-%   Detailed explanation goes here
+%CheckandCreateDir 
+% PURPOSE: Checks if the inputted directory exists, if it does not, it creates
+% the directory
+% INPUTS: foldertosave: directory to check
+%
     if ~exist(foldertosave, 'dir')
        mkdir(foldertosave)
     end

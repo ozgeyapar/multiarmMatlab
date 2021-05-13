@@ -31,12 +31,12 @@ Below stages should be implemented once per machine to create code to describe t
     kgcb = [ corrbasefol strcat('\', kgcbfolder,'\')];
     addpath(genpath(kgcb));
 ```	
-If your directory structure or folder names are different, adjust the SetPaths.m code accordingly. When SetPaths.m is executed, variables pdecorr, pdecode and kgcb should contain the directories of multiarmMatlab, pdestop and matlabKG folders.
+If your directory structure or folder names are different, adjust the SetPaths.m code accordingly. When SetPaths.m is executed, variables pdecorr, pdecode and kgcb should contain the directories of multiarmMatlab, pdestop and matlabKG folders, respectively.
 
 7. Run SetSolFiles.m, which creates the standardized PDE solution files to be used in cPDELower and cPDEUpper policies. This step is needed to run only once per machine.
 
 # AT THE BEGINNING OF EACH SESSION
-1. Run SetPaths.m to perform some initializations for the path variables.
+1. Run SetPaths.m to perform initializations for the path variables.
 2. Run the following to load the standardized PDE solution files.
 ```
 PDELocalInit;

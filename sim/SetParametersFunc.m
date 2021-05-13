@@ -36,7 +36,7 @@ function [ parameters, rval ] = SetParametersFunc( parameterlist )
         parameters.lambda = 1; %will be calculated from the pilot
         parameters.sigma0 = eye(parameters.M); %will be calculated from the pilot
         parameters.mu0 = zeros(parameters.M,1); %will be calculated from the pilot
-        parameters.lambdav = parameters.lambda*ones(1,parameters.M); %will be calculated from the pilot
+        parameters.lambdav = parameters.lambda*ones(parameters.M,1); %will be calculated from the pilot
         parameters.efns = parameters.lambdav./diag(parameters.sigma0)'; %will be calculated from the pilot
         if (~isfield(parameters, 'doses'))
             warning('runpilot is 1, therefore doses needs to be specified')
@@ -101,7 +101,7 @@ function [ parameters, rval ] = SetParametersFunc( parameterlist )
         return
     end
     if(isscalar(parameters.lambdav))
-        parameters.lambdav = parameters.lambdav*ones(1,parameters.M);
+        parameters.lambdav = parameters.lambdav*ones(parameters.M,1);
     end
     if(~isfield(parameters, 'naturelambdav'))
         parameters.naturelambdav = parameters.lambdav;
@@ -131,7 +131,7 @@ function [ parameters, rval ] = SetParametersFunc( parameterlist )
         return
     elseif(~isfield(parameters, 'sigma0'))
         if(isscalar(parameters.efns)) 
-            parameters.efns = parameters.efns*ones(1,parameters.M);
+            parameters.efns = parameters.efns*ones(parameters.M,1);
         end 
         if (isfield(parameters, 'betasigma0'))
             parameters.sigma0 = parameters.cvec*betasigma0*parameters.cvec.';
@@ -170,7 +170,7 @@ function [ parameters, rval ] = SetParametersFunc( parameterlist )
         return
     end
     if(isscalar(parameters.c))
-        parameters.c = parameters.c*ones(1,parameters.M);
+        parameters.c = parameters.c*ones(parameters.M,1);
     end 
     
     % check delta
