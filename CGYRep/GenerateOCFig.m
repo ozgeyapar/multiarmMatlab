@@ -37,8 +37,9 @@ function GenerateOCFig(result, foldername, filename, includese)
         xlabel('Sample size');
         ylabel('log_{10}(E[OC])');
         legend(names);
-        set(gca,'FontSize',36)
-        set(gca,'fontname','times')
+        PDEUtilStdizeFigure(f,0.9,20,true); % SEC: Normalize the size of the plot
+%        set(gca,'FontSize',36)
+%        set(gca,'fontname','times')
     else % don't include standard error bars
         f = figure;
         hold on
@@ -52,8 +53,9 @@ function GenerateOCFig(result, foldername, filename, includese)
         xlabel('Sample size');
         ylabel('log_{10}(E[OC])');
         legend(names);
-        set(gca,'FontSize',36)
-        set(gca,'fontname','times')
+        PDEUtilStdizeFigure(f,0.9,20,true); % SEC: Normalize the size of the plot
+%        set(gca,'FontSize',36)
+%        set(gca,'fontname','times')
     end
     if foldername ~= -1
         %Save the figure

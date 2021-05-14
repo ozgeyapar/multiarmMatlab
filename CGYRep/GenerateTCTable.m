@@ -42,7 +42,7 @@ function [ toCopy ] = GenerateTCTable( result, foldername, filename )
     if foldername ~= -1
         %Save the figure
         CheckandCreateDir( foldername )
-        save(strcat(foldertosave, filename, '-table'), 'toCopy')
+        save(strcat(foldername, filename, '-table'), 'toCopy') %SEC: Changed foldertosave to foldername
     end
 
 end
