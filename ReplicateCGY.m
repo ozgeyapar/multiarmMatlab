@@ -26,6 +26,8 @@
 % sPDE: cPDE stopping policy
 % sPDEHeu: cPDE heuristic stopping policy, uses cPDELower and cPDEUpper for faster computation
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% INITIALIZATION
 %%% Set directories
 SetPaths
@@ -34,111 +36,250 @@ SetPaths
 PDELocalInit;
 [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false); %load solution files
 
-% Simulation details
-settings.NUMOFREPS = 2; %number of replications for simulations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% GLOBAL PARAMETERS %%%
+
+% Simulation details: Settings that can be edited by end-user. 
+DOPAPER = true; % Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
+DOHIREPS = false; % Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
+    CGYHIREPS = 10; % was 1000 for final paper. can set lower for testing.
+    CGYLOWREPS = 5; % small number of replications so runs don't take too long - for debug or checking install
+DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if files are not to be saved. 
+    %if saved, need to set foldertosave and filename fields of the settings
+    %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
+    %'Outputs\') settings.filename = 'myfigs'.
+
+if DOHIREPS
+    settings.NUMOFREPS = CGYHIREPS; % high number of replications for more accurate graphs - 1000 was used for paper
+else
+    settings.NUMOFREPS = CGYLOWREPS; % low number of replications, for testing purposes.
+end
+if DOSAVEFILES
+    settings.foldertosave = strcat(pdecorr, 'Outputs\');
+    settings.filename = 'demo'; %name of the figure file if it will be saved
+else
+    settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+    settings.filename = ''; %name of the figure file if it will be saved
+end
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
 settings.seed = 487429276; % seed to be used for random number generation
 settings.BOUND = 10000; %Maximum number of periods the simulation goes
-settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
-settings.filename = ''; %name of the figure file if it will be saved
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CHUNK 1: Policies to test
 
 %% Comparing allocation policies with 80 arm problem
-startt = tic;
 %Problem parameters  
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
-%%%  Policies to test
-policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
-rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
-rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
-Tfixed = [2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+if ~DOPAPER
+    %%%  Policies to test: a sequence of allocation rule/stopping rule
+    %%%  combinations - in the following - there are 4 policies, each with
+    %%%  fixed sample size stopping rule
+    policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
+    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
+    rtype = [0, 0, 1, 0]; %0 for nonrandomized, 1 for uniform, 2 for TTVS
+    Tfixed = 20*ones(1,4);%[2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('test-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
 
-% For Figure 1 in Section 6.2 
-% policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aCKGstar:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
-% rprob = [-1,-1,-1, -1, -1, -1, -1, -1, -1]; % randomization probability, negative if deterministic
-% rtype = [0,0,0,0,0,0,0,0,0]; %1 for uniform, 2 for TTVS
-% Tfixed = 100*ones(9,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    %%% Run simulation analysis
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a figure to compare allocation policies
+    GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
+    %%% Calculate CI at a given t
+    givent = 2;
+    [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
+    toc(startt)
+end
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CHUNK 2: FIGURE 1 of SECTION 6.2 and FIGURE 2 of SECTION 6.4
 
-% For Figure 2 in Section 6.4
-% policies = 'aEqual:sfixed:aRandom:sfixed:aVar:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % policies to include
-% rprob = [-1,-1,-1,0.4,0.2,0.4,0.2,-1]; % randomization probability, negative if deterministic
-% rtype = [0,0,0, 1, 1, 2, 2, 0]; %1 for uniform, 2 for TTVS
-% Tfixed = 100*ones(8,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+%Problem parameters  
+M = 80;
+alphaval = 100; %for alpha = alphaval/(M-1)^2
+pval = 6; %for P = 10^pval
 
-%%% Run simulation
-[ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
-[ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+if DOPAPER
+    % For Figure 1 in Section 6.2 
+    policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aCKGstar:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
+    rprob = [-1,-1,-1, -1, -1, -1, -1, -1, -1]; % randomization probability, negative if deterministic
+    rtype = [0,0,0,0,0,0,0,0,0]; %1 for uniform, 2 for TTVS
+    Tfixed = 100*ones(9,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('sec62-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation analysis
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a figure to compare allocation policies
+    GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
+    %%% Calculate CI at a given t
+    givent = 2;
+    [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
+    toc(startt)
 
-%%% Generating a figure to compare allocation policies
-GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
-toc(startt)
+    % For Figure 2 in Section 6.4
+    policies = 'aEqual:sfixed:aRandom:sfixed:aVar:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % policies to include
+    rprob = [-1,-1,-1,0.4,0.2,0.4,0.2,-1]; % randomization probability, negative if deterministic
+    rtype = [0,0,0, 1, 1, 2, 2, 0]; %1 for uniform, 2 for TTVS
+    Tfixed = 100*ones(8,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('sec64-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation analysis
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a figure to compare allocation policies
+    GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
+    %%% Calculate CI at a given t
+    givent = 2;
+    [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
+    toc(startt)
+end
 
-%%% Calculate CI at a given t
-givent = 2;
-[meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CHUNK 3: Table 1 of SECTION 6.3, Table EC.2 in Appendix C.1
 
 %% Comparing allocation and stopping policy pairs with 80 arm problem
-startt = tic;
 %Problem parameters  
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
-%%%  Policies to test
-policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
-rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
-rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
-Tfixed = [2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+%%%%%%%%%%%%%%%%%%%%
+%%%Policies to test
+if ~DOPAPER
+    policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
+    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
+    rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
+    Tfixed = 10*ones(1,4); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('chunk3test-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    toc(startt)
+end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table 1 in Section 6.3
-% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
-% rprob = -1*ones(15,1); % randomization probability, negative if deterministic
-% rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
-% Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+if DOPAPER
+    policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
+    rprob = -1*ones(15,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
+    Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('sec63table1-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    toc(startt)
+end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table EC2 in Appendix C.1
-% pval = 4; %for P = 10^4
-% policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
-% rprob = -1*ones(4,1); % randomization probability, negative if deterministic
-% rtype = 0*ones(4,1); %1 for uniform, 2 for TTVS
-% Tfixed = [0,0,0,0]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 
-%%% Run simulation
-[ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
-[ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
-toc(startt)
+if DOPAPER
+    pval = 4; %for P = 10^4
+    policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
+    rprob = -1*ones(4,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(4,1); %1 for uniform, 2 for TTVS
+    Tfixed = [0,0,0,0]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 
-%%% Generating a table to compare policies
-[ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    %%% Run simulation
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    toc(startt)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CHUNK 4: Testing of GPR prior, etc.
 
 %% Comparing allocation and stopping policy pairs with dose-finding case study
-startt = tic;
 %Problem parameters  
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
-graphforprior = 0; %if 1, generates a figure that shows the prior for each pilot study
+graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
+zalpha = 1/2; % used in robust and tilted priors
+
+if ~DOPAPER
+    %%%  Policies to test
+    policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
+    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
+    rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
+    Tfixed = [20,20,20,20]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    %%% Run simulation
+    startt = tic;
+    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    toc(startt)
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TO HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% For Table 1 in Section 6.3 
+%SEC FIX: IS THIS TABLE 1 IN 6.3? OR OTHER? Table 1 of 6.3 was listed above?
+%Problem parameters  
+priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
+graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
 zalpha = 1/2; % used in robust and tilted priors
 
 %%%  Policies to test
-policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
-rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
-rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
-Tfixed = [20,20,20,20]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+if DOPAPER
+    policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
+    rprob = -1*ones(15,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
+    Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    %%% Run simulation
+    startt = tic;
+    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    toc(startt)
+end
 
-% For Table 1 in Section 6.3
-% policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
-% rprob = -1*ones(15,1); % randomization probability, negative if deterministic
-% rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
-% Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-
-%%% Run simulation
-[ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
-[ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
-toc(startt)
-
-%%% Generating a table to compare policies
-[ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plotting EVI approximations against different prior means
 %%% Generate a problem with 3 arms
