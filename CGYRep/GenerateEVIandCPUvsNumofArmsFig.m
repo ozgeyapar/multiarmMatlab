@@ -8,7 +8,8 @@ function GenerateEVIandCPUvsNumofArmsFig (Mvec, cfSoln, alttograph, periodtograp
 % Mvec: number of arms in the problem to include in the figure
 % cfSoln: variable which contains the standardized solution
 %   for undiscounted problem. 
-% alttograph: number, which alterantive's EVI to calculate, must be below 5
+% alttograph: number, which alterantive's EVI to calculate, must be below
+%   minimum of Mvec
 % periodtograph: number, calcualte EVI after how many periods
 % alphaval: for alpha = alphaval/(M-1)^2
 % pval: for P = 10^pval

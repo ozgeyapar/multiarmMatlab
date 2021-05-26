@@ -1,30 +1,70 @@
 % ReplicateCGY.m:
 % PURPOSE: A macro with the code required to generate the figures and tables
 % for correlated multiarm paper (Chick, Gans, Yapar (2020)).
-%
-% Here is the list of allocation and stopping policies that can be tested
-% with the names to call them
-% aPDEUpper: cPDEUpper allocation policy with optimized alphas
-% aPDEUpperNO: cPDEUpper allocation policy with equal alphas
-% aPDELower: cPDELower allocation policy
-% aVar: Allocation policy based on variance of each arm
-% aCKGstar: cKGstar allocation policy
-% aCKG: cKG1 allocation policy
-% aESPb: ESPb allocation policy
-% aESPB: ESPB allocation policy
-% aEqual: Equal (round-robin) allocation policy
-% aPDE: cPDE allocation policy
-% aRandom: Random allocation policy
-% 
-% sPDEUpper: cPDEUpper stopping policy with optimized alphas
-% sPDEUpperNO: cPDEUpper stopping policy with equal alphas
-% sPDELower: cPDELower stopping policy
-% sfixed: Fixed stopping policy
-% sCKGstar: cKGstar stopping policy
-% sCKG: cKG1 stopping policy
-% sESPb: ESPb stopping policy
-% sPDE: cPDE stopping policy
-% sPDEHeu: cPDE heuristic stopping policy, uses cPDELower and cPDEUpper for faster computation
+%%
+%%%% Explanations for the options for the simulation rules and policies %%%%
+%%% %%%  Policies to test: a sequence of allocation rule/stopping rule
+    %%%  combinations - in the following - there are 4 policies, each with
+    %%%  fixed sample size stopping rule
+    % e.g. policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed';
+    %%% Here is the list of allocation and stopping policies that can be tested
+    %%% with the names to call them
+    % aPDEUpper: cPDEUpper allocation policy with optimized alphas
+    % aPDEUpperNO: cPDEUpper allocation policy with equal alphas
+    % aPDELower: cPDELower allocation policy
+    % aVar: Allocation policy based on variance of each arm
+    % aCKGstar: cKGstar allocation policy
+    % aCKG: cKG1 allocation policy
+    % aESPb: ESPb allocation policy
+    % aESPB: ESPB allocation policy
+    % aEqual: Equal (round-robin) allocation policy
+    % aPDE: cPDE allocation policy
+    % aRandom: Random allocation policy
+    % 
+    % sPDEUpper: cPDEUpper stopping policy with optimized alphas
+    % sPDEUpperNO: cPDEUpper stopping policy with equal alphas
+    % sPDELower: cPDELower stopping policy
+    % sfixed: Fixed stopping policy
+    % sCKGstar: cKGstar stopping policy
+    % sCKG: cKG1 stopping policy
+    % sESPb: ESPb stopping policy
+    % sPDE: cPDE stopping policy
+    % sPDEHeu: cPDE heuristic stopping policy, uses cPDELower and cPDEUpper for faster computation
+    
+    %%%  Randomization probabilities for each policy: a numerical array,
+    %%%  each value corresponds to the randomization probability of the
+    %%%  corresponding allocation policy (according to the order given in 
+    %%%  'policies' above). Use -1 for an allocation policy to be
+    %%%  deterministic, otherwise select a number between 0 and 1.
+    % e.g., rprob = [-1, -1, 0.2, -1];
+    
+    %%%  Randomization types for each policy: a numerical array,
+    %%%  each value corresponds to the randomization method used (according
+    %%%  to the order given in 'policies' above). 0 for nonrandomized, 1 
+    %%%  for uniform, 2 for TTVS
+    % e.g., rtype = [0, 0, 1, 0]; 
+    
+    %%%  Fixed stopping time: a numerical array, each value corresponds to
+    %%%  the period to stop for fixed stopping policy (according
+    %%%  to the order given in 'policies' above). 0 can be used if 
+    %%%  a different stopping time is used
+    % e.g., Tfixed = [20,20,20,20];
+    
+    %%%  Type of the prior to be used (if pilot study data is used to fit a 
+    %%%  prior): CGY (2020) introduced two modifications to
+    %%%  to the prior distribution obtained by using the Gaussian process 
+    %%%  regression (GPR) called Robust and Tilted. Option called priortype 
+    %%% controls whether the prior from the GPR or one of the two 
+    %%% modifications are used. Use 'gpr' to use the GPR prior as it is, use
+    %%% 'robust' for Robust prior and or use 'tilted' for Tilted prior.
+    % e.g., priortype = 'gpr'; 
+    %%% Option graphforprior controls whether a figure that shows the prior 
+    %%% for each pilot study is generated or not.
+    % e.g., graphforprior = 1; %if 1, generates , 0 for no figure.
+    %%% Option zalpha is the fudge factor for uncertainty that is used
+    %%%  to control how tilted and robust priors modify the prior mean.
+    % e.g., zalpha = 1/2;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -43,7 +83,7 @@ PDELocalInit;
 DOPAPER = true; % Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = false; % Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
     CGYHIREPS = 10; % was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 5; % small number of replications so runs don't take too long - for debug or checking install
+    CGYLOWREPS = 2; % small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
@@ -70,14 +110,11 @@ settings.BOUND = 10000; %Maximum number of periods the simulation goes
 
 %% Comparing allocation policies with 80 arm problem
 %Problem parameters  
-M = 80;
+M = 80; % number of arms in the problem
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
 if ~DOPAPER
-    %%%  Policies to test: a sequence of allocation rule/stopping rule
-    %%%  combinations - in the following - there are 4 policies, each with
-    %%%  fixed sample size stopping rule
     policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
     rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
     rtype = [0, 0, 1, 0]; %0 for nonrandomized, 1 for uniform, 2 for TTVS
@@ -187,6 +224,12 @@ if ~DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    %%% toCopy is a Matlab variable that contains the summary statistics 
+    %%% for the simulation in the following order: 
+    %%%     'Allocation','Stopping','E[T]', 'S.E', 'E[SC]','S.E','E[OC]','S.E','E[TC]'
+    %%%     ,'S.E','P(CS)','CPU'}.
+    %%% Can be opened with openvar('toCopy') command to be viwed as a table.
+    openvar('toCopy')
     toc(startt)
 end
 
@@ -210,6 +253,7 @@ if DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    openvar('toCopy')
     toc(startt)
 end
 
@@ -228,6 +272,7 @@ if DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    openvar('toCopy')
     toc(startt)
 end
 
@@ -235,7 +280,7 @@ end
 %%% CHUNK 4: Testing of GPR prior, etc.
 
 %% Comparing allocation and stopping policy pairs with dose-finding case study
-%Problem parameters  
+%Problem parameters   
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
 graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
 zalpha = 1/2; % used in robust and tilted priors
@@ -252,6 +297,7 @@ if ~DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    openvar('toCopy')
     toc(startt)
 end
 
@@ -259,6 +305,7 @@ end
 
 % For Table 1 in Section 6.3 
 %SEC FIX: IS THIS TABLE 1 IN 6.3? OR OTHER? Table 1 of 6.3 was listed above?
+%OZGE: Fixed it! This section is for Table 2 in 6.4!
 %Problem parameters  
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
 graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
@@ -266,28 +313,41 @@ zalpha = 1/2; % used in robust and tilted priors
 
 %%%  Policies to test
 if DOPAPER
-    policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
-    rprob = -1*ones(15,1); % randomization probability, negative if deterministic
-    rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
-    Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEHeu:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu'; % policies to include
+    rprob = -1*ones(7,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(7,1); %1 for uniform, 2 for TTVS
+    if strcmp(priortype, 'gpr')
+       Tfixed = [1060,1060,1060,0,0,0,0];
+    elseif strcmp(priortype, 'robust')
+        Tfixed = [565,565,565,0,0,0,0];
+    elseif strcmp(priortype, 'tilted')
+        Tfixed = [595,595,595,0,0,0,0];
+    end
     %%% Run simulation
     startt = tic;
     [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ toCopy ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    openvar('toCopy')
     toc(startt)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Plotting EVI approximations against different prior means
+% This section generates a graph that plots EVIs approximated by cPDELower, 
+% cPDEUpper, cPDE, cKG1 and cKG* methods for a range of mu_0^i values of arm i
+% in a three-arm problem.
+% The user can control the value of i (1,2 or 3) and the range of mu_0^i's
+% to be plotted.
+
 %%% Generate a problem with 3 arms
 [ parameters ] = ProblemSetup3Arms();
 
 %%% Figure parameters
 i = 1; % calculate the EVI of arm i
-mu0istotest = (-3:1:3)*sqrt(parameters.sigma0(i,i)); %prior mean values to calcualte the EVI at
+mu0istotest = (-3:1:3)*sqrt(parameters.sigma0(i,i)); %prior mean values to calculate the EVI at
 
 % For Figure EC1
 % i = 1;
@@ -297,6 +357,12 @@ mu0istotest = (-3:1:3)*sqrt(parameters.sigma0(i,i)); %prior mean values to calcu
 GenerateEVIvsmu0Fig(mu0istotest, i, cfSoln, parameters, settings.foldertosave, settings.filename)
 
 %% Plotting EVI approximations across all arms in a problem
+% This section generates a graph that plots EVIs approximated by cPDELower, 
+% cPDEUpper, cPDE, cKG1 and cKG* methods across a range of arms in the 
+% syntetic problem.
+% The user can control the problem parameters and which arms to include
+% in the plot.
+
 %%% Generate a problem
 M = 80;
 alphaval = 16; %for alpha = alphaval/(M-1)^2
@@ -338,6 +404,17 @@ armstotest = 1:5:parameters.M;
 GenerateEVIvsArmsFig(armstotest, cfSoln, parameters, settings.foldertosave, settings.filename)
 
 %% Plotting EVI approximations and CPU times across multiple problems
+% This section generates two graphs. One depicts the EVI for a given arm i 
+% using cPDELower, cPDEUpper, cPDE, cKG1 and cKG* methods. The other one
+% plots the computation times of these EVI calculations.
+% The values are plotted across different numbers of arms in the syntetic 
+% problem. To obtain a prior with different priors for different arms, a 
+% couple of arms are sampled and the prior is updated before the graph is 
+% generated.
+% The user can control the problem parameters, the number of arms to include
+% in the plot, which arm to calculate EVI for, and how many samples are 
+% taken (to update the prior) before calculating the EVI.
+
 %%% Problem parameters
 Mvec = 5:5:100; % Number of arms in the problem to test over
 alphaval = 100; %for alpha = alphaval/(M-1)^2
@@ -356,6 +433,13 @@ periodtograph = 5; %calculate EVI after how many periods
 GenerateEVIandCPUvsNumofArmsFig(Mvec, cfSoln, alttograph, periodtograph, alphaval, pval, settings.foldertosave, settings.filename)
 
 %% Plotting the power curve for a problem
+% This section generates a graph that plots the probability of correct 
+% selection of different policies against the difference between the
+% mean of best arm and the second best arm (called delta) in a triangular 
+% synthetic problem.
+% The user can control the problem parameters, the range of deltas and the
+% policies to be tested.
+
 %%% Problem parameters
 M = 21; % Number of arms in the problem to test over
 deltastotest = 0.3:0.2:1.5; % controls the shape of the triangular curve

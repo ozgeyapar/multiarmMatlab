@@ -45,7 +45,7 @@ function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtyp
          if t == Tfixed - 1 %record if stops because we are at the boundary
             stoppedatbound = 1;
          end
-         if (settings.crn == 1)
+         if (settings.crn == 1) && any(rprob > 0) && any(rprob < 1)
             parameters.randomizeornot = stdrand(t+1);
             i = allpolicy(cfSoln, cgSoln, parameters, mucur, sigmacur, t, rtype, rprob); %alternative we will sample from
          else
