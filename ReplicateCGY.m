@@ -345,7 +345,7 @@ end
 
 % For Table 2 in Section 6.4
 %Problem parameters  
-priortypestodo = ['gpr', 'robust', 'tilted'];
+priortypestodo = {'gpr', 'robust', 'tilted'};
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
 graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
 zalpha = 1/2; % used in robust and tilted priors
@@ -353,24 +353,31 @@ zalpha = 1/2; % used in robust and tilted priors
 %%%  Policies to test
 if DOPAPER
     policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEHeu:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu'; % policies to include
-    rprob = -1*ones(7,1); % randomization probability, negative if deterministic
-    rtype = 0*ones(7,1); %1 for uniform, 2 for TTVS
+    numrulepairs = (1+count(policies,':'))/2;
+    rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
+    
     %%% Run simulations
     startt = tic;
     for i=1:length(priortypestodo)
-        priortype = priortypestodo(i);
+        priortype = string(priortypestodo(i));
+        Tfixed=0*ones(numrulepairs,1); ;
         if strcmp(priortype, 'gpr')
-           Tfixed = [1060,1060,1060,0,0,0,0];
+           Tfixed(1:3,1) = 1060*ones(3,1);
         elseif strcmp(priortype, 'robust')
-            Tfixed = [565,565,565,0,0,0,0];
+           Tfixed(1:3,1) = 565*ones(3,1);
         elseif strcmp(priortype, 'tilted')
-            Tfixed = [595,595,595,0,0,0,0];
+           Tfixed(1:3,1) = 595*ones(3,1);
+        end
+        if ~DOHIREPS
+            Tfixed = ceil(Tfixed/50);
         end
         [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
+        simresults=eye(5+i);
         [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
         %%% Generating a table to compare policies
-        [ testtable(i) ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-        writecell(testtable(i),strcat('Table2Sec64-',priortype,'.xls'))
+        [ testtable ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+        writecell(testtable,strcat('Table2Sec64-',priortype,'.xls'))
 %        openvar('testtable(i)')
     end
     toc(startt)

@@ -139,7 +139,8 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
         ticks(parameters.indicestosample(5)) = "8";
 
         doses = parameters.doses;
-        figure
+        f = figure;
+%        PDEUtilStdizeFigure(f,0.9,20,true); 
         h1 = subplot(1,3,1);
         hold on
         plot(doses,parameters.thetav,'k','LineWidth',2, 'MarkerSize',10)
