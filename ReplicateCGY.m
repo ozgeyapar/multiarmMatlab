@@ -83,7 +83,7 @@ PDELocalInit;
 DOPAPER = false; % Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = false; % Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
     CGYHIREPS = 16; % was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 3; % small number of replications so runs don't take too long - for debug or checking install
+    CGYLOWREPS = 2; % small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
@@ -127,12 +127,15 @@ if ~DOPAPER
     % reflects a randomization probability, to be intepreted according to
     % the definition of the relevant allocation rule.
     rprob = -1 * ones(numrulepairs,1);  % this sets all rule pairs to be run in determinstic way
-    rprob(3) = 0.2; % this sets the third rule pair to use the given randomization probability 
+    rprob(3) = 0.2; % this sets the third rule pair to use the given randomization probability
     %    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
     % rtype = is set for randomization for a given rule pair. 0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
     rtype = 0 * ones(numrulepairs,1); % this sets all rule pairs to be nonrandomized.
     rtype(3) = 1; % here, the third rule pair is randomized for uniform selection
     %rtype = [0, 0, 1, 0]'; %0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
+    % NOTE: rprob and rtype consistency: For randomization to happen, both have to imply randomization. 
+    % THAT IS: if rprob(1) = .2 and rtype(1) = 0, deterministic. If rprob(1) = -1 and rtype(1) = 2, deterministic. 
+    
     Tfixed = 15*ones(numrulepairs,1);%[2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     if DOSAVEFILES
         settings.foldertosave = strcat(pdecorr, 'Outputs\');
@@ -258,8 +261,14 @@ if ~DOPAPER
     %%%     'Allocation','Stopping','E[T]', 'S.E', 'E[SC]','S.E','E[OC]','S.E','E[TC]'
     %%%     ,'S.E','P(CS)','CPU'}.
     %%% Can be opened with openvar('toCopy') command to be viwed as a table.
-%    openvar('testTable')
-    writecell(testTable,'testTable.xls')
+    if DOSAVEFILES
+%        foldertosave = strcat(pdecorr, 'Outputs\');
+        CheckandCreateDir( settings.foldertosave )
+        filename = 'testTable'; %name of the excel file if it will be saved
+        writecell(testTable,strcat(settings.foldertosave, filename, '.xls'))
+    else
+        openvar('testTable')
+    end
     toc(startt)
 end
 
@@ -285,7 +294,13 @@ if DOPAPER
     %%% Generating a table to compare policies
     [ table1sec63 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
     %openvar('table1sec63')
-    writecell(table1sec63,'table1sec63.xls')
+    if DOSAVEFILES
+        CheckandCreateDir( settings.foldertosave )
+        filename = 'table1sec63'; %name of the excel file if it will be saved
+        writecell(table1sec63, strcat(settings.foldertosave, filename, '.xls'))
+    else
+        openvar('table1sec63')
+    end
     toc(startt)
 end
 
@@ -310,8 +325,13 @@ if DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-    openvar('tableEC2')
-    writecell(tableEC2,'tableEC2.xls')
+    if DOSAVEFILES
+        CheckandCreateDir( settings.foldertosave )
+        filename = 'tableEC2'; %name of the excel file if it will be saved
+        writecell(tableEC2, strcat(settings.foldertosave, filename, '.xls'))
+    else
+        openvar('tableEC2')
+    end    
     toc(startt)
 end
 
@@ -335,9 +355,14 @@ if ~DOPAPER
     [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
-    [ testtable ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-    openvar('testtable')
-    writecell(testtable,strcat('test-',priortype,'.xls'))
+    [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    if DOSAVEFILES
+        CheckandCreateDir( settings.foldertosave )
+        filename = 'testTab2'; %name of the excel file if it will be saved
+        writecell(testTab2, strcat(settings.foldertosave, filename, '.xls'))
+    else
+        openvar('testTab2')
+    end      
     toc(startt)
 end
 
@@ -352,22 +377,27 @@ zalpha = 1/2; % used in robust and tilted priors
 
 %%%  Policies to test
 if DOPAPER
-    policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEHeu:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu'; % policies to include
+    if DOSLOWPAIRS
+        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEHeu:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu'; % policies to include
+    else
+        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO'; % policies to include
+    end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
     rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
+    CheckandCreateDir( settings.foldertosave );
     
     %%% Run simulations
     startt = tic;
     for i=1:length(priortypestodo)
         priortype = string(priortypestodo(i));
-        Tfixed=0*ones(numrulepairs,1); ;
+        Tfixed=0*ones(numrulepairs,1);
         if strcmp(priortype, 'gpr')
-           Tfixed(1:3,1) = 1060*ones(3,1);
+           Tfixed(1:3) = 1060*ones(3,1);
         elseif strcmp(priortype, 'robust')
-           Tfixed(1:3,1) = 565*ones(3,1);
+           Tfixed(1:3) = 565*ones(3,1);
         elseif strcmp(priortype, 'tilted')
-           Tfixed(1:3,1) = 595*ones(3,1);
+           Tfixed(1:3) = 595*ones(3,1);
         end
         if ~DOHIREPS
             Tfixed = ceil(Tfixed/50);
@@ -376,9 +406,14 @@ if DOPAPER
         simresults=eye(5+i);
         [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
         %%% Generating a table to compare policies
-        [ testtable ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-        writecell(testtable,strcat('Table2Sec64-',priortype,'.xls'))
-%        openvar('testtable(i)')
+        [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+        if DOSAVEFILES
+            CheckandCreateDir( settings.foldertosave )
+            filename = 'Table2Sec64-'; %name of the excel file if it will be saved
+            writecell(testTab2, strcat(settings.foldertosave, filename, priortype, '.xls'))
+        else
+            openvar('testTab2')
+        end      
     end
     toc(startt)
 end
