@@ -21,7 +21,7 @@ function [ toCopy ] = GenerateTCTable( result, foldername, filename )
     for j = 1:NUMOFPPOL %For each rule pair
         % Expectation and standard error of the mean
         result.policy(j).explastt = mean([result.policy(j).detailed.lastt]); %average length before stopping
-        result.policy(j).selastt = mean([result.policy(j).detailed.lastt]); %average length before stopping
+        result.policy(j).selastt = std([result.policy(j).detailed.lastt])/sqrt(NUMOFREPS);
         result.policy(j).expsamcost = mean([result.policy(j).detailed.SClast]); %Sampling cost
         result.policy(j).seSC = std([result.policy(j).detailed.SClast])/sqrt(NUMOFREPS);
         result.policy(j).expOC = mean([result.policy(j).detailed.OClast]); %Opportunity cost
