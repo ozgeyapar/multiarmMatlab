@@ -82,8 +82,8 @@ PDELocalInit;
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = false; % Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = false; % Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 16; % was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 2; % small number of replications so runs don't take too long - for debug or checking install
+    CGYHIREPS = 15; % was 1000 for final paper. can set lower for testing.
+    CGYLOWREPS = 3; % small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
@@ -366,7 +366,6 @@ if ~DOPAPER
     toc(startt)
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TO HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % For Table 2 in Section 6.4
 %Problem parameters  
@@ -417,6 +416,8 @@ if DOPAPER
     end
     toc(startt)
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TO HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
