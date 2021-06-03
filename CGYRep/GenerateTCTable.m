@@ -22,14 +22,14 @@ function [ toCopy ] = GenerateTCTable( result, foldername, filename )
         % Expectation and standard error of the mean
         result.policy(j).explastt = mean([result.policy(j).detailed.lastt]); %average length before stopping
         result.policy(j).selastt = std([result.policy(j).detailed.lastt])/sqrt(NUMOFREPS);
-        result.policy(j).expsamcost = mean([result.policy(j).detailed.SClast]); %Sampling cost
+        result.policy(j).expSC = mean([result.policy(j).detailed.SClast]); %Sampling cost
         result.policy(j).seSC = std([result.policy(j).detailed.SClast])/sqrt(NUMOFREPS);
         result.policy(j).expOC = mean([result.policy(j).detailed.OClast]); %Opportunity cost
         result.policy(j).seOC = std([result.policy(j).detailed.OClast])/sqrt(NUMOFREPS);
-        result.policy(j).exptotalcost = mean([result.policy(j).detailed.TClast]); %Sum of sampling and opportunity cost
-        result.policy(j).vartotalcost = std([result.policy(j).detailed.TClast])/sqrt(NUMOFREPS);
+        result.policy(j).expTC = mean([result.policy(j).detailed.TClast]); %Sum of sampling and opportunity cost
+        result.policy(j).varTC = std([result.policy(j).detailed.TClast])/sqrt(NUMOFREPS);
         result.policy(j).PCS = sum([result.policy(j).detailed.CS])/NUMOFREPS; %probability of correct selection 
-        result.policy(j).totalcomptime = sum([result.policy(j).detailed.comptime]); %total time required for computation
+        result.policy(j).avgcomptime = sum([result.policy(j).detailed.comptime])/NUMOFREPS; %average time required for computation
     end
 
     %Summary statistics as a matrix
@@ -42,7 +42,7 @@ function [ toCopy ] = GenerateTCTable( result, foldername, filename )
     if foldername ~= -1
         %Save the figure
         CheckandCreateDir( foldername )
-        save(strcat(foldername, filename, '-table'), 'toCopy') %SEC: Changed foldertosave to foldername
+        writecell(toCopy,strcat(foldername, filename, '-table.xls'))
     end
 
 end

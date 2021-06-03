@@ -5,15 +5,12 @@ function [ stop ] = StoppingFixed(Tfixed, t)
 % continue.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
 % t: numerical scalar, current period
 %
 % OUTPUTS: 
 % stop: 1 for stopping and 0 for continue.
-%
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
+
 
 %%
 if t<Tfixed

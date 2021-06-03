@@ -4,8 +4,7 @@ function [ thetavalue ] = TrueThetaCreator( parameters, stdtheta, crn)
 % replication based on problem parameters
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % stdtheta: a matrix of standardized normals, used for observation noise if crn is asked
 % crn: 1 if crn is asked
 %

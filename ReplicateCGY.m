@@ -28,8 +28,7 @@
     % sCKGstar: cKGstar stopping policy
     % sCKG: cKG1 stopping policy
     % sESPb: ESPb stopping policy
-    % sPDE: cPDE stopping policy
-    % sPDEHeu: cPDE heuristic stopping policy, uses cPDELower and cPDEUpper for faster computation
+    % sPDE: cPDE stopping policy, uses cPDELower and cPDEUpper for faster computation
     
     %%%  Randomization probabilities for each policy: a numerical array,
     %%%  each value corresponds to the randomization probability of the
@@ -58,12 +57,13 @@
     %%% modifications are used. Use 'gpr' to use the GPR prior as it is, use
     %%% 'robust' for Robust prior and or use 'tilted' for Tilted prior.
     % e.g., priortype = 'gpr'; 
-    %%% Option graphforprior controls whether a figure that shows the prior 
-    %%% for each pilot study is generated or not.
-    % e.g., graphforprior = 1; %if 1, generates , 0 for no figure.
     %%% Option zalpha is the fudge factor for uncertainty that is used
     %%%  to control how tilted and robust priors modify the prior mean.
     % e.g., zalpha = 1/2;
+    %%% Option settings.graphforprior controls whether a figure that shows 
+    %%% the prior for each pilot study is generated or not, generated only
+    %%% for the first 5 simulation replications
+    % e.g., settings.graphforprior = 1; %if 1, generates , 0 for no figure.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,6 +88,8 @@ DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
     %'Outputs\') settings.filename = 'myfigs'.
+    % If foldertosave field is -1, no result will be saved regardless of the 
+    % value of filename field.
 DOSLOWPAIRS = false; % Set to TRUE to get graphs with cPDE and other slow policies (be prepared for VERY long run times), set to false (recommended) to omit cPDE from analysis
 
 if DOHIREPS
@@ -260,22 +262,14 @@ if ~DOPAPER
     %%% for the simulation in the following order: 
     %%%     'Allocation','Stopping','E[T]', 'S.E', 'E[SC]','S.E','E[OC]','S.E','E[TC]'
     %%%     ,'S.E','P(CS)','CPU'}.
-    %%% Can be opened with openvar('toCopy') command to be viwed as a table.
-    if DOSAVEFILES
-%        foldertosave = strcat(pdecorr, 'Outputs\');
-        CheckandCreateDir( settings.foldertosave )
-        filename = 'testTable'; %name of the excel file if it will be saved
-        writecell(testTable,strcat(settings.foldertosave, filename, '.xls'))
-    else
-        openvar('testTable')
-    end
+    %%% Can be opened with openvar('testTable') command to be viwed as a table.
     toc(startt)
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table 1 in Section 6.3
 if DOPAPER
-    policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDEHeu:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
+    policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDE:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
     %numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(15,1); % randomization probability, negative if deterministic
     rtype = 0*ones(15,1); %1 for uniform, 2 for TTVS
@@ -293,14 +287,7 @@ if DOPAPER
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ table1sec63 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-    %openvar('table1sec63')
-    if DOSAVEFILES
-        CheckandCreateDir( settings.foldertosave )
-        filename = 'table1sec63'; %name of the excel file if it will be saved
-        writecell(table1sec63, strcat(settings.foldertosave, filename, '.xls'))
-    else
-        openvar('table1sec63')
-    end
+    %%% Can be viewed with openvar('table1sec63')
     toc(startt)
 end
 
@@ -319,19 +306,19 @@ if DOPAPER
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
     rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
     Tfixed = 0*ones(numrulepairs,1); %[0,0,0,0]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('appC1tableEC2'); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
     %%% Run simulation
     [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
-    [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-    if DOSAVEFILES
-        CheckandCreateDir( settings.foldertosave )
-        filename = 'tableEC2'; %name of the excel file if it will be saved
-        writecell(tableEC2, strcat(settings.foldertosave, filename, '.xls'))
-    else
-        openvar('tableEC2')
-    end    
+    [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
+    %%% Can be viewed with openvar('tableEC2')
     toc(startt)
 end
 
@@ -341,8 +328,10 @@ end
 %% Comparing allocation and stopping policy pairs with dose-finding case study
 %Problem parameters   
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
-graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
 zalpha = 1/2; % used in robust and tilted priors
+settings.graphforprior = 1; %if 1, generates a figure that shows the prior 
+        % for pilot data for first 5 replications, 0 means no figure is
+        % generated.
 
 if ~DOPAPER
     %%%  Policies to test
@@ -350,19 +339,20 @@ if ~DOPAPER
     rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
     rtype = [0, 0, 1, 0]; %1 for uniform, 2 for TTVS
     Tfixed = 20*ones(size(rtype)); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('testTab2'); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
     %%% Run simulation
     startt = tic;
-    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
+    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
-    [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-    if DOSAVEFILES
-        CheckandCreateDir( settings.foldertosave )
-        filename = 'testTab2'; %name of the excel file if it will be saved
-        writecell(testTab2, strcat(settings.foldertosave, filename, '.xls'))
-    else
-        openvar('testTab2')
-    end      
+    [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
+    %%% Can be viewed with openvar('testTab2')
     toc(startt)
 end
 
@@ -370,22 +360,22 @@ end
 % For Table 2 in Section 6.4
 %Problem parameters  
 priortypestodo = {'gpr', 'robust', 'tilted'};
-priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
-graphforprior = 1; %if 1, generates a figure that shows the prior for each pilot study, 0 for no figure.
 zalpha = 1/2; % used in robust and tilted priors
-
+settings.graphforprior = 1; %if 1, generates a figure that shows the prior 
+        % for pilot data for first 5 replications, 0 means no figure is
+        % generated.
+        
 %%%  Policies to test
 if DOPAPER
     if DOSLOWPAIRS
-        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEHeu:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDEHeu'; % policies to include
+        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include
     else
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO'; % policies to include
     end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
     rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
-    CheckandCreateDir( settings.foldertosave );
-    
+
     %%% Run simulations
     startt = tic;
     for i=1:length(priortypestodo)
@@ -401,18 +391,19 @@ if DOPAPER
         if ~DOHIREPS
             Tfixed = ceil(Tfixed/50);
         end
-        [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha);
+        if DOSAVEFILES
+            settings.foldertosave = strcat(pdecorr, 'Outputs\');
+            settings.filename = strcat('sec64table2', priortype); %name of the figure file if it will be saved
+        else
+            settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+            settings.filename = ''; %name of the figure file if it will be saved
+        end
+        [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha);
         simresults=eye(5+i);
         [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
         %%% Generating a table to compare policies
-        [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
-        if DOSAVEFILES
-            CheckandCreateDir( settings.foldertosave )
-            filename = 'Table2Sec64-'; %name of the excel file if it will be saved
-            writecell(testTab2, strcat(settings.foldertosave, filename, priortype, '.xls'))
-        else
-            openvar('testTab2')
-        end      
+        [ table2sec64 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
+        %%% Can be viewed with openvar('table2sec64')
     end
     toc(startt)
 end

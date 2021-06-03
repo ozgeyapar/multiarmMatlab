@@ -34,5 +34,5 @@ sCKGstar = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingcKGs
 sCKGold = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingcKG1( parameters, muin, sigmain );
 sCKG = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingcKG1Ratio( parameters, muin, sigmain );
 sESPb = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingIndESPb( parameters, muin, sigmain );
-sPDE = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDE( parameters, muin, sigmain );
-sPDEHeu = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDEHeu(undissoln, dissoln, parameters, muin, sigmain);
+sPDEold = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDEOld( parameters, muin, sigmain );
+sPDE = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDE(undissoln, dissoln, parameters, muin, sigmain);

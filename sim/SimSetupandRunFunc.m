@@ -22,7 +22,8 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
     NUMOFREPS = settings.NUMOFREPS;
     filename = settings.filename; 
     foldertosave = settings.foldertosave;
-   
+    localsettings = settings; %used below for the figure for priors from pilot study
+    
     %% Policies to be tested
     %Defines rules
     DefineRules;
@@ -77,7 +78,13 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
         
         %Run pilot to get the prior and sampling variance
         if parameters.runpilot == 1
-            [ parameters.mu0, parameters.sigma0, parameters.lambdav, parameters.efns, parameters.pilotdetails ] = SimPilotandDetPrior( parameters, stdpilot, thetav);
+            % This if statement is to make sure that the figures are
+            % generated for only the first five replications
+            localsettings.filename = strcat(filename, '-threepriors-rep',num2str(n));
+            if n > 5
+                localsettings.graphforprior = 0;
+            end
+            [ parameters.mu0, parameters.sigma0, parameters.lambdav, parameters.efns, parameters.pilotdetails ] = SimPilotandDetPrior( parameters, localsettings, stdpilot, thetav);
         end
         RandStream.setGlobalStream(tiestream)
         

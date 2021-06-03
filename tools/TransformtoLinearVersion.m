@@ -6,8 +6,7 @@ function [ a,b,d,Mprime ] = TransformtoLinearVersion( mu, sigma, parameters, i )
 %
 % INPUTS: 
 % mu, sigma: prior mean vector and prior covariance matrix
-% parameters: parameter set of the problem, see ExampleProblemSetup.m for
-%   an example of how to set parameters
+% parameters: parameter set of the problem
 % i: the alternative we sample from
 %
 % OUTPUTS: 

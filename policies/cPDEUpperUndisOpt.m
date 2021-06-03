@@ -8,8 +8,7 @@ function [ alphas, evi] = cPDEUpperUndisOpt( undissol, parameters, mu, sigma, i 
 %   for undiscounted problem. SetSolFiles.m generates the standardized
 %   solution and PDELoadSolnFiles is used to load it. See
 %   AllocationcPDEUpperOpt.m for more details.
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
 % mu: numerical vector that contains the prior mean vector
 % sigma: numerical matrix that contains the prior covariance matrix
 % i: numerical scalar, index of the arm whose EVI will be calculated
@@ -18,9 +17,6 @@ function [ alphas, evi] = cPDEUpperUndisOpt( undissol, parameters, mu, sigma, i 
 % alphas: optimal weights to allocate sampling cost among arms
 % evi: EVI of arm i estimated using cPDEUpper approach
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input, and see AllocationcPDEUpperOpt.m for
-% examples on how to call this function
 
 %%
     [a,b,d,Mprime] = TransformtoLinearVersion( mu, sigma, parameters, i ); %Convert the problem into linear version

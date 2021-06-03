@@ -5,16 +5,13 @@ function [ stop ] = StoppingcKG1Ratio( parameters, muin, sigmain )
 % of benefit to cost. Returns 1 for stopping and 0 for continue.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % muin: numerical vector that contains the prior mean vector
 % sigmain: numerical matrix that contains the prior covariance matrix
 %
 % OUTPUTS: 
 % stop: 1 for stopping and 0 for continue.
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
 
 %%
     kg = zeros(1,parameters.M); %preallocation for speed

@@ -8,8 +8,7 @@ function [ evi ] = cPDEUpperDis( dissol,parameters,  mu, sigma, i )
 %   for discounted problem. SetSolFiles.m generates the standardized
 %   solution and PDELoadSolnFiles is used to load it. See
 %   AllocationcPDEUpper.m for more details.
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % mu: numerical vector that contains the prior mean vector
 % sigma: numerical matrix that contains the prior covariance matrix
 % i: numerical scalar, index of the arm whose EVI will be calculated
@@ -17,9 +16,6 @@ function [ evi ] = cPDEUpperDis( dissol,parameters,  mu, sigma, i )
 % OUTPUTS: 
 % evi: EVI of arm i estimated using cPDEUpper approach
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input, and see AllocationcPDEUpper.m for
-% examples on how to call this function
 
 %%
     %Convert the problem into linear version
