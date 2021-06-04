@@ -90,6 +90,7 @@ function GenerateEVIandCPUvsNumofArmsFig (Mvec, cfSoln, alttograph, periodtograp
     ylabel('Log_{10}(CPU Time)')
     set(axes1,'FontName','Times New Roman','FontSize',36);
     legend(axes1,'show');
+    PDEUtilStdizeFigure(f1,0.9,20,true); % SEC: Normalize the size of the plot
 
     % Save figure to a file    
     if foldername ~= -1
@@ -113,12 +114,13 @@ function GenerateEVIandCPUvsNumofArmsFig (Mvec, cfSoln, alttograph, periodtograp
     ylabel(strcat('EVI of Alternative ', num2str(alttograph), 'at Period ', num2str(periodtograph)))
     set(axes1,'FontName','Times New Roman','FontSize',36);
     legend(axes1,'show');
-
+    PDEUtilStdizeFigure(f2,0.9,20,true); % SEC: Normalize the size of the plot
+    
     % Save figure to a file   
     if foldername ~= -1
         %Save the figure
         CheckandCreateDir( foldername )
         savefig(f2, strcat(foldername, filename, '-EVIDiff', '.fig'));
-        saveas(f2, strcat(foldernam, filename, '-EVIDiff'), 'epsc')
+        saveas(f2, strcat(foldername, filename, '-EVIDiff'), 'epsc')
     end
 end

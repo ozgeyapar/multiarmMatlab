@@ -41,6 +41,7 @@ function GeneratePowerCurve(results, foldername, filename)
     legend(names);
     set(gca,'fontname','times')
     set(gca,'FontSize',24)
+    PDEUtilStdizeFigure(f,0.9,20,true); % SEC: Normalize the size of the plot
     
     if foldername ~= -1
         %Save the figure

@@ -45,6 +45,7 @@ function GenerateOCTCSCFig(result, foldername, filename)
     logmeanSCeach = log10(meanSCeach);
     logmeanSCupper = log10(meanSCupper);
     plot(Tstoplot,logmeanSCeach(Tstoplot),'-.b','LineWidth',2, 'MarkerSize',10)
+    
     %errorbar(Tstoplot,logmeanSCeach(Tstoplot),logmeanSCupper(Tstoplot)-logmeanSCeach(Tstoplot),'-.b','LineWidth',2, 'MarkerSize',10)
 
     %set(gca, 'YScale', 'log');
@@ -55,7 +56,8 @@ function GenerateOCTCSCFig(result, foldername, filename)
     legend('E[OC]','E[TC]','E[SC]');
     set(gca,'FontSize',36)
     set(gca,'fontname','times')
-
+    PDEUtilStdizeFigure(f,0.9,20,true); % SEC: Normalize the size of the plot
+    
     if foldername ~= -1
         %Save the figure
         CheckandCreateDir( foldername )

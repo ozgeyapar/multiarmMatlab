@@ -27,7 +27,8 @@ function GenerateEVIvsArmsFig(armstotest, cfSoln, parameters, foldername, filena
         ind = armstotest(i);
         evilower(i) = cPDELowerUndis( cfSoln, parameters, parameters.mu0, parameters.sigma0, ind );
         eviupper(i) = cPDEUpperUndisNoOpt( cfSoln, parameters, parameters.mu0, parameters.sigma0, ind );
-        evionline(i) = cPDEUndis( parameters, parameters.mu0, parameters.sigma0, ind );
+%        evionline(i) = cPDEUndis( parameters, parameters.mu0, parameters.sigma0, ind );
+        evionline(i) = cPDEUndis( parameters, parameters.mu0, parameters.sigma0, ind, 140, 45 ); %SEC
         [ ~, kgistar] = cKGstarUndis( parameters, parameters.mu0, parameters.sigma0, ind );
         evickgstar(i) = parameters.P*log(kgistar);
         kgi = cKG1Undis( parameters, parameters.mu0, parameters.sigma0, ind );
@@ -39,6 +40,7 @@ function GenerateEVIvsArmsFig(armstotest, cfSoln, parameters, foldername, filena
     axes1 = axes;
     hold(axes1,'on');
     h = plot(repmat(armstotest,5,1)',allevis','MarkerSize',10,'LineWidth',2);
+    PDEUtilStdizeFigure(fec,0.9,20,true); % SEC: Normalize the size of the plot
     set(h,{'Marker'},{'x'; 'd'; '+'; 's'; 'o'})
     set(h,{'Color'},{[0 0.4470 0.7410]; [0.8500,0.3250,0.0980]; [0.9290 0.6940 0.1250]; [0.4940 0.1840 0.5560]; [0.4660 0.6740 0.1880]})
     legend('cPDELower', 'cPDEUpper', 'cPDE', 'cKG\fontsize{20}\ast', 'cKG\fontsize{20}1')
