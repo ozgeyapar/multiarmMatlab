@@ -62,12 +62,6 @@ function [ parameters, rval ] = SetParametersFunc( parameterlist )
             parameters = [];
             return
         end
-        if (~isfield(parameters, 'graphforprior'))
-            warning('runpilot is 1, therefore graphforprior needs to be specified')
-            rval = 0;
-            parameters = [];
-            return
-        end
         if (~isfield(parameters, 'zalpha'))
             warning('runpilot is 1, therefore zalpha needs to be specified')
             rval = 0;

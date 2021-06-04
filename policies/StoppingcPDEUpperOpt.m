@@ -12,17 +12,13 @@ function [ stop ] = StoppingcPDEUpperOpt( undissoln, dissoln, parameters, muin, 
 % dissoln: variable which contains the standardized solution
 %   for discounted problem. SetSolFiles.m generates the standardized
 %   solution and PDELoadSolnFiles is used to load it.
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % muin: numerical vector that contains the prior mean vector
 % sigmain: numerical matrix that contains the prior covariance matrix
 %
 % OUTPUTS: 
 % stop: 1 for stopping and 0 for continue.
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input, and ExampleCallingcPDEs.m for an 
-% example of how to call this function
 
 %%
     evi = zeros(1,parameters.M); %preallocation for speed]

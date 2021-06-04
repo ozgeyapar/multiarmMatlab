@@ -1,11 +1,10 @@
-function [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, zalpha)
+function [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha)
 %ProblemSetupDoseCaseStudy 
 % PURPOSE: Generates the parameters struct that contains the
 % parameters for the dose finding case study problem in Chick, Gans, Yapar (2020)
 %
 % INPUTS: 
 % priortype: 'gpr', 'robust' or 'tilted'
-% graphforprior: if 1, generates a figure that shows the prior for each pilot study
 % zalpha: used in robust and tilted priors
 
 % OUTPUTS: 
@@ -52,8 +51,8 @@ function [ parameters ] = ProblemSetupDoseCaseStudy(priortype, graphforprior, za
     
     %Generate the problem parameters
     list = {'M',M,'efns',efns, 'lambdav',lambdav,'mu0',mu0,'P',P,'I',I,'c',c,'delta',delta,'sigma0',sigma0,'thetav',thetav, ...
-        'naturelambdav',naturelambdav, 'runpilot', runpilot, 'doses', doses, 'indicestosample', indicestosample, 'N', N, 'priortype',priortype...
-        'graphforprior', graphforprior, 'zalpha', zalpha}; 
+        'naturelambdav',naturelambdav, 'runpilot', runpilot, 'doses', doses, 'indicestosample', indicestosample, 'N', N, 'priortype',priortype,...
+        'zalpha', zalpha}; 
     [ parameters, ~ ] = SetParametersFunc( list );
 end
 

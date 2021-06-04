@@ -4,8 +4,7 @@ function [ evi] = cPDEUndis( parameters, mu, sigma, i, THoriz, precfactor )
 % problem, defined in Chick, Gans, Yapar (2020)
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % mu: numerical vector that contains the prior mean vector
 % sigma: numerical matrix that contains the prior covariance matrix
 % i: numerical scalar, index of the arm whose EVI will be calculated
@@ -17,8 +16,6 @@ function [ evi] = cPDEUndis( parameters, mu, sigma, i, THoriz, precfactor )
 % OUTPUTS: 
 % evi: EVI of arm i estimated using cPDE approach
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
 
 %%
     %default if input is not given

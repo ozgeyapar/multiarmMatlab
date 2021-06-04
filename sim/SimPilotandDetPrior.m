@@ -1,4 +1,4 @@
-function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( parameters, stdpilot, thetav)
+function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( parameters, settings, stdpilot, thetav)
 %SimPilotandDetPrior
 % PURPOSE: Simulates a pilot dose-response data from the true theta and 
 % actual sampling variance, uses this data to estimate a prior
@@ -7,9 +7,8 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
 % in parameters.priortype.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m or ExampleProblemSetupwithPilot.m for examples 
-%   of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
+% settings: struct of simulation settings such as bound, crn etc.
 % stdpilot: a matrix of standardized normals, used for pilot study if crn is asked
 % thetav: actual means
 %
@@ -110,18 +109,18 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
     lambdav = predlambdav*ones(parameters.M,1);
     efns = lambdav./diag(sigma0)';
     
-    if  parameters.graphforprior == 1
-        %%%% Plotting three priors for a sample path
+    if  settings.graphforprior == 1
+        %%%% Plotting three priors obtained for the pilot study
         % GPR
         mu0gpr=predmu;
         sigma0gpr = predsigma;
-        %robust
+        % Robust
         z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
         mu0robust = (maxmu+z*maxSigma0sqrt)*ones(parameters.M,1);
         sigma0robust = 4*predsigma;
-        %tilted
+        % Tilted
         z = parameters.zalpha; %z_alpha in the paper
         maxmu = max([predmu(:); meanresp(:)]);
         maxSigma0sqrt = max(diag(sqrt(predsigma)));
@@ -130,40 +129,49 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
             mu0tilted(i) = maxmu + 2*z*(1-i/parameters.M)*maxSigma0sqrt;
         end
         sigma0tilted = 4*predsigma;
-
-        ticks = strings(1,parameters.M);
-        ticks(parameters.indicestosample(1)) = "0";
-        ticks(parameters.indicestosample(2)) = "2";
-        ticks(parameters.indicestosample(3)) = "4";
-        ticks(parameters.indicestosample(4)) = "6";
-        ticks(parameters.indicestosample(5)) = "8";
-
+        
+        %%% rename for ease of use
         doses = parameters.doses;
+        maxdose = max(doses);
+        %%% Location of x-axis ticks
+        ticks = strings(1,parameters.M);
+        for i = 1:length(parameters.indicestosample)
+            ticks(parameters.indicestosample(i)) = num2str(doses(parameters.indicestosample(i)));
+        end
+        
+        %%% Start the figure
         f = figure;
-%        PDEUtilStdizeFigure(f,0.9,20,true); 
+        
+        %%% Subplot one for GPR
         h1 = subplot(1,3,1);
         hold on
+        % plot the actual dose response curve
         plot(doses,parameters.thetav,'k','LineWidth',2, 'MarkerSize',10)
+        % plot the GPR mean
         plot(doses,mu0gpr,'--k','LineWidth',2, 'MarkerSize',10);
+        % shade the area between +/- standard error
         upper = mu0gpr + diag(sqrt(sigma0gpr)); 
         lower = mu0gpr - diag(sqrt(sigma0gpr));
         x2 = [doses, fliplr(doses)];
         inBetween = [upper', fliplr(lower')];
         hfill = fill(x2, inBetween, [17 17 17]/255, 'LineStyle','none');
         set(hfill,'facealpha',.1)
-        %scatter(doses(samplingparameters.indicestosample), meanresp, 150, 'xk','LineWidth',2); 
+        % add ticks
         xticks(doses)
         set(h1,'XTickLabel',ticks)
-        set(h1,'XLim',[0,8])
+        % set the x-axis limit
+        set(h1,'XLim',[0,maxdose])
+        % axis labels
         xlabel('Dose level h_i');
         ylabel('$');
-        %legend('\theta_i', '\mu^{0, GPR}_i');
-        set(h1,'FontSize',36)
-        set(h1,'fontname','times')
+        %set(h1,'FontSize',36)
+        %set(h1,'fontname','times')
+        PDEUtilStdizeFigure(f,0.9,20,false); 
         hold off
         % Enlarge figure to full screen.
-        set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
-
+        %set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
+        
+        %%% Subplot two for Robust
         h2 = subplot(1,3,2);
         hold on
         plot(doses,parameters.thetav,'k','LineWidth',2, 'MarkerSize',10)
@@ -174,17 +182,17 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
         inBetween = [upper', fliplr(lower')];
         hfill = fill(x2, inBetween, [17 17 17]/255, 'LineStyle','none');
         set(hfill,'facealpha',.1)
-        %scatter(doses(samplingparameters.indicestosample), meanresp, 150, 'xk','LineWidth',2); 
         xticks(doses)
         set(h2,'XTickLabel',ticks)
-        set(h2,'XLim',[0,8])
+        set(h2,'XLim',[0,maxdose])
         xlabel('Dose level h_i');
         ylabel('$');
-        %legend('\theta_i', '\mu^{0, Robust}_i');
-        set(h2,'FontSize',36)
-        set(h2,'fontname','times')
+        %set(h2,'FontSize',36)
+        %set(h2,'fontname','times')
+        PDEUtilStdizeFigure(f,0.9,20,false); 
         hold off
-
+        
+        %%% Subplot three for Tilted
         h3 = subplot(1,3,3);
         hold on
         plot(doses,parameters.thetav,'k','LineWidth',2, 'MarkerSize',10)
@@ -196,35 +204,48 @@ function [ mu0, sigma0, lambdav, efns, pilotdetails ] = SimPilotandDetPrior( par
         inBetween = [upper', fliplr(lower')];
         hfill = fill(x2, inBetween, [17 17 17]/255, 'LineStyle','none');
         set(hfill,'facealpha',.1)
-        %scatter(doses(samplingparameters.indicestosample), meanresp, 150, 'xk','LineWidth',2); 
         xticks(doses)
         set(h3,'XTickLabel',ticks)
-        set(h3,'XLim',[0,8])
+        set(h3,'XLim',[0,maxdose])
         xlabel('Dose level h_i');
         ylabel('$');
-        %legend('\theta_i', '\mu^{0, Tilted}_i');
-        set(h3,'FontSize',36)
-        set(h3,'fontname','times')
+        %set(h3,'FontSize',36)
+        %set(h3,'fontname','times')
+        PDEUtilStdizeFigure(f,0.9,20,false); 
         y3 = ylim;
         hold off
-        moveam = 0.02;
-    %     h1.OuterPosition(1) = h1.OuterPosition(1) - moveam;
-    %     h1.OuterPosition(3) = h1.OuterPosition(3) - moveam;
-    %     h2.OuterPosition(1) = h2.OuterPosition(1) - moveam;
-    %     h2.OuterPosition(3) = h2.OuterPosition(3) - moveam;
-    %     h3.OuterPosition(1) = h3.OuterPosition(1) - moveam;
-    %     h3.OuterPosition(3) = h3.OuterPosition(3) - moveam;
-    % 
-    %     h1.OuterPosition(2) = h1.OuterPosition(2) + 0.03;
-    %     h2.OuterPosition(2) = h2.OuterPosition(2) + 0.03;
-    %     h3.OuterPosition(2) = h3.OuterPosition(2) + 0.03;
+        
+        % Following set of code manually moves the subplots around to make
+        % room for the legend
+        %     moveam = 0.02;
+        %     h1.OuterPosition(1) = h1.OuterPosition(1) - moveam;
+        %     h1.OuterPosition(3) = h1.OuterPosition(3) - moveam;
+        %     h2.OuterPosition(1) = h2.OuterPosition(1) - moveam;
+        %     h2.OuterPosition(3) = h2.OuterPosition(3) - moveam;
+        %     h3.OuterPosition(1) = h3.OuterPosition(1) - moveam;
+        %     h3.OuterPosition(3) = h3.OuterPosition(3) - moveam;
+        % 
+        %     h1.OuterPosition(2) = h1.OuterPosition(2) + 0.03;
+        %     h2.OuterPosition(2) = h2.OuterPosition(2) + 0.03;
+        %     h3.OuterPosition(2) = h3.OuterPosition(2) + 0.03;
+    
+        %%% Set the same y-axis limit for all three subplots
         set(h1,'YLim',y3)
         set(h2,'YLim',y3)
         set(h3,'YLim',y3)
+        
+        %%% Legend for the figure
         Lgnd = legend({'$\theta_i$', '$\mu^{0}_i$', '$\pm \surd\Sigma^0_{i,i}$'});
         %Lgnd = legend({'$\theta_i$', '$\mu^{0}_i$', '$\bar{Y}_i$', '$\pm \surd\Sigma^0_{i,i}$'});
         %Lgnd.Position = [0.89 0.43 0.10 0.25];
         set(Lgnd,'interpreter','Latex')
+        
+        if settings.foldertosave ~= -1
+            %Save the figure
+            CheckandCreateDir( settings.foldertosave )
+            savefig(f, strcat(settings.foldertosave, settings.filename, '.fig'));
+            saveas(f, strcat(settings.foldertosave, settings.filename), 'epsc')
+        end
     end
 end
 

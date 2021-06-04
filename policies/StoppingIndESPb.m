@@ -5,16 +5,13 @@ function [ stop] = StoppingIndESPb( parameters, mu, sigma )
 % arms. Returns 1 for stopping and 0 for continue.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields
 % muin: numerical vector that contains the prior mean vector
 % sigmain: numerical matrix that contains the prior covariance matrix
 %
 % OUTPUTS: 
 % stop: 1 for stopping and 0 for continue.
-%
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
+
 
 %%
     if parameters.delta == 1

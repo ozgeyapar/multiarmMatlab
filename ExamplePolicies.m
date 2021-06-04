@@ -51,7 +51,7 @@ rng default
 
 %% Stopping times that use standardized solution
 % all stopping policies should return 0 (do not stop)
-[ stop ] = StoppingcPDEHeu( cfSoln, cgSoln, parameters, mucur, sigmacur)
+[ stop ] = StoppingcPDE( cfSoln, cgSoln, parameters, mucur, sigmacur)
 [ stop ] = StoppingcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur )
 [ stop ] = StoppingcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur )
 [ stop ] = StoppingcPDEUpperOpt( cfSoln, cgSoln, parameters, mucur, sigmacur)

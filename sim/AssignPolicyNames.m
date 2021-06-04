@@ -24,14 +24,14 @@ function [ rulename ] = AssignPolicyNames( functionname, functiontype, rtype, rp
         warning('function type should be either 1 or 2');
     end
     rulename = char(temp(3));
-    if strcmp(rulename,'cPDE')
+    if strcmp(rulename,'cPDEOld')
         if functiontype == 1
             rulename = 'cPDE';
         else
             rulename = 'cPDE';
         end
     end
-    if strcmp(rulename,'cPDEHeu')
+    if strcmp(rulename,'cPDE')
         if functiontype == 1
             rulename = 'cPDE';
         else

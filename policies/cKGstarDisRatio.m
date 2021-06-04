@@ -5,8 +5,7 @@ function [ optbeta, kgi] = cKGstarDisRatio( parameters, mu, sigma, i )
 % positive discounting.
 % 
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields (See 
-%   ExampleProblemSetup.m for an example of how to generate this struct)
+% parameters: struct, problem parameters are included as fields 
 % mu: numerical vector that contains the prior mean vector
 % sigma: numerical matrix that contains the prior covariance matrix
 % i: numerical scalar, index of the arm whose EVI will be calculated
@@ -15,8 +14,6 @@ function [ optbeta, kgi] = cKGstarDisRatio( parameters, mu, sigma, i )
 % optbeta: optimal fixed lookahead
 % kgi: log of cKG* index for arm i, normalized for P and I
 %
-% SUGGESTED WORKFLOW: See ExampleProblemSetup.m for an example of 
-% generating the 'parameters' input
 
 %%
     %Convert the problem into linear version
