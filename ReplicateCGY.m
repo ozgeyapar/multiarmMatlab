@@ -419,7 +419,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TO HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%% BELOW FOR ONLINE COMPANION %%%%%%%%%%%%%%%%%%
 
 %% Plotting EVI approximations against different prior means
 % This section generates a graph that plots EVIs approximated by cPDELower, 
