@@ -41,7 +41,7 @@ function [ stop ] = StoppingcPDE( undissoln, dissoln, parameters, muin, sigmain)
                 if eviupper <= 0
                     evi(j) = 0;
                 else
-                    evi(j)= cPDEUndis(parameters, muin, sigmain, j, 300, 45);
+                    evi(j)= cPDEUndis(parameters, muin, sigmain, j, 250, 45); %SEC was 300 in paper rather than 250 here.
                     cPDEcount = cPDEcount + 1;
                     if evi(j) > 0
                         stop = 0;

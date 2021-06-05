@@ -145,8 +145,8 @@ PDELocalInit;
 
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
-DOHIREPS = false; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 20; % GLOBAL: was 1000 for final paper. can set lower for testing.
+DOHIREPS = true; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
+    CGYHIREPS = 40; % GLOBAL: was 1000 for final paper. can set lower for testing.
     CGYLOWREPS = 4; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
@@ -169,7 +169,8 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
-settings.seed = 487429276; % seed to be used for random number generation
+settings.seed = 487429276; % seed to be used for random number generation - value used in paper.
+%settings.seed = 48742927; % seed to be used for random number generation
 settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observations per arm per sample path.
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
@@ -178,56 +179,56 @@ settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observa
 %% Copy and paste chunk by chunk the code.
 % this chunk illustrates examples of creating a list of policies to test,
 % and running a simulation experiment, including output of graphs
+if ~DOPAPER
+    %% Compare several allocation policies on an 80 arm problem
+    %Problem parameters  
+    M = 80; % number of arms in the problem
+    alphaval = 100; %for alpha = alphaval/(M-1)^2
+    pval = 6; %for P = 10^pval
 
-%% Compare several allocation policies on an 80 arm problem
-%Problem parameters  
-M = 80; % number of arms in the problem
-alphaval = 100; %for alpha = alphaval/(M-1)^2
-pval = 6; %for P = 10^pval
+    mymsg = 'running simple low-resolution test sample';
+    if DOMSGS disp(mymsg); end;
 
-mymsg = 'running simple low-resolution test sample';
-if DOMSGS disp(mymsg); end;
+    % Policies to include - these are delimited by ':', and are to have an
+    % allocation rule followed by a stopping rule. 
+    policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; 
+    % the number of rule pairs (allocation/stopping) is therefore:
+    numrulepairs = (1+count(policies,':'))/2;
+    % for each rule pair, speciify if the allocation rule is to include
+    % randomization or not. If the value is negative, the allocation is
+    % applied in a deterministic way. if the value is in [0,1), then this
+    % reflects a randomization probability, to be intepreted according to
+    % the definition of the relevant allocation rule.
+    rprob = -1 * ones(numrulepairs,1);  % this sets all rule pairs to be run in determinstic way
+    rprob(3) = 0.2; % this sets the third rule pair to use the given randomization probability
+    %    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
+    % rtype = is set for randomization for a given rule pair. 0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
+    rtype = 0 * ones(numrulepairs,1); % this sets all rule pairs to be nonrandomized.
+    rtype(3) = 1; % here, the third rule pair is randomized for uniform selection
+    %rtype = [0, 0, 1, 0]'; %0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
+    % NOTE: rprob and rtype consistency: For randomization to happen, both have to imply randomization. 
+    % THAT IS: if rprob(1) = .2 and rtype(1) = 0, deterministic. If rprob(1) = -1 and rtype(1) = 2, deterministic. 
 
-% Policies to include - these are delimited by ':', and are to have an
-% allocation rule followed by a stopping rule. 
-policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; 
-% the number of rule pairs (allocation/stopping) is therefore:
-numrulepairs = (1+count(policies,':'))/2;
-% for each rule pair, speciify if the allocation rule is to include
-% randomization or not. If the value is negative, the allocation is
-% applied in a deterministic way. if the value is in [0,1), then this
-% reflects a randomization probability, to be intepreted according to
-% the definition of the relevant allocation rule.
-rprob = -1 * ones(numrulepairs,1);  % this sets all rule pairs to be run in determinstic way
-rprob(3) = 0.2; % this sets the third rule pair to use the given randomization probability
-%    rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
-% rtype = is set for randomization for a given rule pair. 0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
-rtype = 0 * ones(numrulepairs,1); % this sets all rule pairs to be nonrandomized.
-rtype(3) = 1; % here, the third rule pair is randomized for uniform selection
-%rtype = [0, 0, 1, 0]'; %0 for nonrandomized, 1 for uniform selection if randomize, 2 for TTVS - top two value sampling variation
-% NOTE: rprob and rtype consistency: For randomization to happen, both have to imply randomization. 
-% THAT IS: if rprob(1) = .2 and rtype(1) = 0, deterministic. If rprob(1) = -1 and rtype(1) = 2, deterministic. 
+    Tfixed = 15*ones(numrulepairs,1);%[2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('test-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
 
-Tfixed = 15*ones(numrulepairs,1);%[2,2,2,2]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-if DOSAVEFILES
-    settings.foldertosave = strcat(pdecorr, 'Outputs\');
-    settings.filename = strcat('test-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
-else
-    settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
-    settings.filename = ''; %name of the figure file if it will be saved
+    %%% Run simulation analysis
+    startt = tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a figure to compare allocation policies
+    GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
+    %%% Calculate CI at a given t
+    givent = 2;
+    [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
+    toc(startt)
 end
-
-%%% Run simulation analysis
-startt = tic;
-[ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
-[ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
-%%% Generating a figure to compare allocation policies
-GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
-%%% Calculate CI at a given t
-givent = 2;
-[meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
-toc(startt)
-
     
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: FIGURE 1 of SECTION 6.2 and FIGURE 4 of SECTION 7.2
@@ -241,7 +242,7 @@ alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
 % For Figure 1 in Section 6.2 
-mymsg = sprintf('analysis for App 6.2 fig 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+mymsg = sprintf('analysis for Sec 6.2 fig 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
 if DOMSGS disp(mymsg); end;
 if DOSLOWPAIRS % if you want to do with cPDE use the next line - be prepared for VERY long run times...
     policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aCKGstar:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
@@ -277,7 +278,7 @@ givent = 2;
 toc(startt)
 
 % For Figure 4 in Section 7.2
-mymsg = sprintf('analysis for App 7.2 fig 4: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+mymsg = sprintf('analysis for Sec 7.2 fig 4: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
 if DOMSGS disp(mymsg); end;
 policies = 'aEqual:sfixed:aRandom:sfixed:aVar:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % policies to include
 numrulepairs = (1+count(policies,':'))/2;
@@ -429,6 +430,7 @@ if DOPAPER
         policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
     else % remove the super slow aPDEUpper computation
         policies = 'aPDEUpperNO:sCKGstar:aPDEUpperNO:sPDELower'; % policies to include
+        policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include %SEC TEST
     end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
@@ -500,6 +502,7 @@ if DOPAPER
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include
     else
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO'; % policies to include
+        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include %SEC test
     end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic

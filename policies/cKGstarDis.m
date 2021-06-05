@@ -24,7 +24,7 @@ function [ optbeta, kgi] = cKGstarDis( parameters, mu, sigma, i )
 
     LOWVAL = 0;     % require at least 2^0 = 1 step look ahead
     HIVAL = 7;      % check lookahead up to 2^HIVAL steps aheads
-    NUMCHECKS = 20; % check 20 values of increment
+    NUMCHECKS = 15; % check 15 values of increment
     betavec = 2.^(LOWVAL:((HIVAL-LOWVAL)/NUMCHECKS):HIVAL);
 
     %initilize
