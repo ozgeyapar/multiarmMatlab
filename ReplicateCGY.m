@@ -127,6 +127,11 @@
 %% Consult README.md to install the necessary code clusters (including the cKG 
 %% package of Peter Frazier, and the pdestop package from Steve Chick
 %% Also: create a SetPaths file to localize the code and initialize paths for your local installation.
+
+DOMSGS = true;  % GLOBAL: Set to 'true' to get status messages for code execution, false otherwise.
+
+mymsg='setting paths, loading precomputed PDE solution (see readme.md for explanation)';
+if DOMSGS disp(mymsg); end;
 %%% Set directories
 SetPaths
 
@@ -139,17 +144,17 @@ PDELocalInit;
 %%% GLOBAL PARAMETERS %%%
 
 % Simulation details: Settings that can be edited by end-user. 
-DOPAPER = true; % Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
-DOHIREPS = true; % Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 20; % was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 3; % small number of replications so runs don't take too long - for debug or checking install
-DOSAVEFILES = true; % set to true to save results and figures to file, FALSE if files are not to be saved. 
+DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
+DOHIREPS = false; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
+    CGYHIREPS = 20; % GLOBAL: was 1000 for final paper. can set lower for testing.
+    CGYLOWREPS = 4; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
+DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
     %'Outputs\') settings.filename = 'myfigs'.
     % If foldertosave field is -1, no result will be saved regardless of the 
     % value of filename field.
-DOSLOWPAIRS = false; % Set to TRUE to get graphs with cPDE and other slow policies (be prepared for VERY long run times), set to false (recommended) to omit cPDE from analysis
+DOSLOWPAIRS = false; % GLOBAL: Set to TRUE to get graphs with cPDE and other slow policies (be prepared for VERY long run times), set to false (recommended) to omit cPDE from analysis
 
 if DOHIREPS
     settings.NUMOFREPS = CGYHIREPS; % high number of replications for more accurate graphs - 1000 was used for paper
@@ -169,7 +174,7 @@ settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observa
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 1: Policies to test. 
+%% CHUNK: Policies to test. 
 %% Copy and paste chunk by chunk the code.
 % this chunk illustrates examples of creating a list of policies to test,
 % and running a simulation experiment, including output of graphs
@@ -179,6 +184,9 @@ settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observa
 M = 80; % number of arms in the problem
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
+
+mymsg = 'running simple low-resolution test sample';
+if DOMSGS disp(mymsg); end;
 
 % Policies to include - these are delimited by ':', and are to have an
 % allocation rule followed by a stopping rule. 
@@ -222,7 +230,7 @@ toc(startt)
 
     
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 2: FIGURE 1 of SECTION 6.2 and FIGURE 4 of SECTION 7.2
+%% CHUNK: FIGURE 1 of SECTION 6.2 and FIGURE 4 of SECTION 7.2
 % These figures give the EOC for each of several allocation rules as a function of a (fixed) sample size
 % Figure 1 in section 6.2 does this for deterministic allocations
 % Figure 4 of section 7.2 does this to compare deterministic and randomized allocations
@@ -233,6 +241,8 @@ alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
 % For Figure 1 in Section 6.2 
+mymsg = sprintf('analysis for App 6.2 fig 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 if DOSLOWPAIRS % if you want to do with cPDE use the next line - be prepared for VERY long run times...
     policies = 'aEqual:sfixed:aESPB:sfixed:aRandom:sfixed:aVar:sfixed:aCKG:sfixed:aCKGstar:sfixed:aPDEUpperNO:sfixed:aPDE:sfixed:aPDELower:sfixed'; % policies to include
     %rprob = [-1,-1,-1, -1, -1, -1, -1, -1, -1]; % randomization probability, negative if deterministic
@@ -267,6 +277,8 @@ givent = 2;
 toc(startt)
 
 % For Figure 4 in Section 7.2
+mymsg = sprintf('analysis for App 7.2 fig 4: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 policies = 'aEqual:sfixed:aRandom:sfixed:aVar:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % policies to include
 numrulepairs = (1+count(policies,':'))/2;
 rprob = [-1,-1,-1,0.4,0.2,0.4,0.2,-1]; % randomization probability, negative if deterministic
@@ -292,9 +304,53 @@ givent = 2;
 toc(startt)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% CHUNK 3: Table 1 of SECTION 6.3, Table EC.2 in Appendix C.1
+%% CHUNK: Finding the best fixed stopping time using simulation for dose-finding case study
+%% In main paper,in Figure 3 we explore the concept of the 'best' fixed duration for a policy, and the EOC, E[T], etotal cost
+%% for some different ways of automatically setting the prior. See Sec 6.4, Figure 3.
+% Left panel of Sec 6.4 Fig 3 is with GPR, right panel is with 'tilted' prior. figure for robust policy not in paper.
+% This code plots the various costs so the sample size with minimum expected total cost can be found.
+% The optimal values can also be used to inform the fixed duration stopping times that are used in Table 2.
 
-%% Comparing allocation and stopping policy pairs with 80 arm problem
+mymsg = sprintf('analysis for Sec 6.4 fig 3: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
+
+priortypestodo = {'gpr', 'robust', 'tilted'};
+settings.graphforprior = 0; %if 1, generates a figure that shows the prior for each pilot study
+zalpha = 1/2; % used in robust and tilted priors
+
+%%% Simulation details
+% Consider setting a different seed, so that best fixed stopping time is
+% coming from a different set of observations
+settings.seed = 6541235; % seed to be used for random number generation
+
+policies = 'aCKG:sfixed';
+rprob = [-1]; % randomization probability, negative if deterministic
+rtype = [0]; %1 for uniform, 2 for TTVS
+Tfixed = 3000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+
+tic
+for i=1:length(priortypestodo)
+    priortype = string(priortypestodo(i));
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('sec64fig3-',priortype); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+
+    %%% Run simulation
+    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a figure
+    GenerateOCTCSCFig(simresults, settings.foldertosave, settings.filename);
+end
+toc
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Table 1 of SECTION 6.3, Table EC.2 in Appendix C.1
+
+% Comparing allocation and stopping policy pairs with 80 arm problem
 %Problem parameters  
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
@@ -302,7 +358,9 @@ pval = 6; %for P = 10^pval
 
 %%%%%%%%%%%%%%%%%%%%
 %%%Policies to test
-
+if ~DOPAPER
+    mymsg = 'demo analysis analogous to sec 6.3 table 1';
+    if DOMSGS disp(mymsg); end;
     policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
     %numrulepairs = (1+count(policies,':'))/2;
     rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
@@ -327,11 +385,13 @@ pval = 6; %for P = 10^pval
     %%%     ,'S.E','P(CS)','CPU'}.
     %%% Can be opened with openvar('testTable') command to be viwed as a table.
     toc(startt)
+end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table 1 in Section 6.3
 if DOPAPER
+    mymsg = sprintf('analysis for sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+    if DOMSGS disp(mymsg); end;
     if ~DOSLOWPAIRS
         policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDE:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
         Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
@@ -359,14 +419,17 @@ if DOPAPER
     toc(startt)
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table EC2 in Appendix C.1
+if DOPAPER
+    mymsg = sprintf('analysis for app C.1 table EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+    if DOMSGS disp(mymsg); end;
     pval = 4; %for P = 10^4
- %   if DOSLOWPAIRS % if all pairs desired... be prepared for LONG run unless analysis is parallelized
+    if DOSLOWPAIRS % if all pairs desired... be prepared for LONG run unless analysis is parallelized
         policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
- %   else % remove the super slow aPDEUpper computation
- %       policies = 'aPDEUpperNO:sCKGstar:aPDEUpperNO:sPDELower'; % policies to include
- %   end
+    else % remove the super slow aPDEUpper computation
+        policies = 'aPDEUpperNO:sCKGstar:aPDEUpperNO:sPDELower'; % policies to include
+    end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
     rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
@@ -385,9 +448,10 @@ end
     [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
     %%% Can be viewed with openvar('tableEC2')
     toc(startt)
+end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% CHUNK 4: Testing of GPR prior, etc.
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Testing of GPR prior, etc.
 
 %% Comparing allocation and stopping policy pairs with dose-finding case study
 %Problem parameters   
@@ -396,7 +460,9 @@ zalpha = 1/2; % used in robust and tilted priors
 settings.graphforprior = 1; %if 1, generates a figure that shows the prior 
         % for pilot data for first 5 replications, 0 means no figure is
         % generated.
-
+if ~DOPAPER
+    mymsg = sprintf('test for prior distribution fitting');
+    if DOMSGS disp(mymsg); end;
     %%%  Policies to test
     policies = 'aEqual:sfixed:aCKG:sfixed:aPDELower:sfixed:aPDELower:sfixed'; % Policies to include
     rprob = [-1, -1, 0.2, -1]; % randomization probability, negative if deterministic
@@ -417,9 +483,9 @@ settings.graphforprior = 1; %if 1, generates a figure that shows the prior
     [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
     %%% Can be viewed with openvar('testTab2')
     toc(startt)
+end
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % For Table 2 in Section 6.4
 %Problem parameters  
 priortypestodo = {'gpr', 'robust', 'tilted'};
@@ -429,6 +495,7 @@ settings.graphforprior = 1; %if 1, generates a figure that shows the prior
         % generated.
         
 %%%  Policies to test
+if DOPAPER
     if DOSLOWPAIRS
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include
     else
@@ -439,6 +506,8 @@ settings.graphforprior = 1; %if 1, generates a figure that shows the prior
     rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
 
     %%% Run simulations
+    mymsg = sprintf('analysis for Sec 6.4 table 2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+    if DOMSGS disp(mymsg); end;
     startt = tic;
     for i=1:length(priortypestodo)
         priortype = string(priortypestodo(i));
@@ -468,22 +537,10 @@ settings.graphforprior = 1; %if 1, generates a figure that shows the prior
         %%% Can be viewed with openvar('table2sec64')
     end
     toc(startt)
+end
 
-% CPU TIMES: (surface pro 6, winx64, matlab 2021a) with LOW NUMBER OF
-% SAMPLES (e.g., 3 reps).
-% DOPAPER = false:
-%  Elapsed time is 41.974694 seconds.
-%  Elapsed time is 20.673777 seconds.
-%  Elapsed time is 17.672771 seconds.
-% DOPAPER = true;
-%  Elapsed time is 43.380853 seconds.
-%  Elapsed time is 74.793836 seconds.
-%  Elapsed time is 917.004172 seconds.
-%  Elapsed time is 1015.455601 seconds.
-%  Elapsed time is 491.313995 seconds.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 5: Plotting EVI approximations against different prior means
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Plotting EVI approximations against different prior means
 %% For EC Appendix C.2, Figure EC.1
 % This section generates a graph that plots EVIs approximated by cPDELower, 
 % cPDEUpper, cPDE, cKG1 and cKG* methods for a range of mu_0^i values of arm i
@@ -492,6 +549,8 @@ settings.graphforprior = 1; %if 1, generates a figure that shows the prior
 % to be plotted.
 
 %%% Generate the problem with 3 arms
+mymsg = sprintf('analysis for App C.2 fig EC.1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 [ parameters ] = ProblemSetup3Arms();
 %%% Figure parameters
 i = 1; % calculate the EVI of arm i
@@ -513,8 +572,8 @@ tic
 GenerateEVIvsmu0Fig(mu0istotest, i, cfSoln, parameters, settings.foldertosave, settings.filename)
 toc
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 6: Plotting EVI approximations across all arms in a problem
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Plotting EVI approximations across all arms in a problem
 %% For EC Appendix C.2, Figure EC.2
 % This section generates a graph that plots EVIs approximated by cPDELower, 
 % cPDEUpper, cPDE, cKG1 and cKG* methods across a range of arms in the 
@@ -523,6 +582,8 @@ toc
 % in the plot.
 
 %%% Generate a problem
+mymsg = sprintf('analysis for App C.2 fig EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 M = 80;
 alphaval = 16; %for alpha = alphaval/(M-1)^2
 pval = 4; %for P = 10^pval
@@ -565,9 +626,9 @@ toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 7: Plotting EVI approximations and CPU times across multiple problems as function of number of arms, at time step 5
-% Plot for Figures EC.3 and EC.4 in online companion Appendix C.2
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Plotting EVI approximations and CPU times across multiple problems as function of number of arms, at time step 5
+% Plot for Figures EC.3 and EC.4 in Appendix C.2
 %
 % This section generates two graphs. One depicts the EVI for a given arm i 
 % using cPDELower, cPDEUpper, cPDE, cKG1 and cKG* methods. The other one
@@ -581,6 +642,8 @@ toc
 % taken (to update the prior) before calculating the EVI.
 
 % For Figures EC3 and EC4 
+mymsg = sprintf('analysis for App C.2 fig EC.3 and fig EC.4: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 %%% Problem parameters
 Mvec = 5:5:100; % Number of arms in the problem to test over
 alphaval = 100; %for alpha = alphaval/(M-1)^2
@@ -600,8 +663,8 @@ tic
 GenerateEVIandCPUvsNumofArmsFig(Mvec, cfSoln, alttograph, periodtograph, alphaval, pval, settings.foldertosave, settings.filename)
 toc
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 8: Plotting the power curve for a problem
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: Plotting the power curve for a problem
 %% FOr Online Companion Appendix D.1, Figure EC.5
 % This section generates a graph that plots the probability of correct 
 % selection of different policies against the difference between the
@@ -625,6 +688,8 @@ else
     settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
     settings.filename = ''; %name of the figure file if it will be saved
 end
+mymsg = sprintf('analysis for App C.2 fig EC.5: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 
 %%% Policies to test
 if ~DOHIREPS %%something resembling fig 5 with subset of procedures, shorter run times
@@ -653,58 +718,15 @@ end
 GeneratePowerCurve(all, settings.foldertosave, settings.filename);
 toc
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 9: Finding the best fixed stopping time using simulation for dose-finding case study
-%% In main paper,in Figure 3 we explore the concept of the 'best' fixed duration for a policy, and the EOC, E[T], etotal cost
-%% for some different ways of automatically setting the prior. 
-%% Left paneel is with GPR, right panel is with 'tilted' prior.
-%% THis code plots the various costs so the sample size with minimum expected total cost can be found.
-%% The optimal values can also be used to inform the fixed duration stopping times that are used in Table 2.
-
-priortypestodo = {'gpr', 'robust', 'tilted'};
-settings.graphforprior = 0; %if 1, generates a figure that shows the prior for each pilot study
-zalpha = 1/2; % used in robust and tilted priors
-
-%%% Simulation details
-% Consider setting a different seed, so that best fixed stopping time is
-% coming from a different set of observations
-settings.seed = 6541235; % seed to be used for random number generation
-
-policies = 'aCKG:sfixed';
-rprob = [-1]; % randomization probability, negative if deterministic
-rtype = [0]; %1 for uniform, 2 for TTVS
-Tfixed = 3000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-
-for i=1:length(priortypestodo)
-    priortype = string(priortypestodo(i));
-    if DOSAVEFILES
-        settings.foldertosave = strcat(pdecorr, 'Outputs\');
-        settings.filename = strcat('sec64fig3-',priortype); %name of the figure file if it will be saved
-    else
-        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
-        settings.filename = ''; %name of the figure file if it will be saved
-    end
-    tic
-    %%% Run simulation
-    [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha);
-    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
-    %%% Generating a figure
-    GenerateOCTCSCFig(simresults, settings.foldertosave, settings.filename);
-    toc
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TO HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK 10: helping to figure out optimal fixed stopping time
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHUNK: helping to figure out optimal fixed stopping time
 %% In main paper,in table 2 we explore the concept of the 'best' fixed duration for a policy.
 %% This section plots curves that helps one find, for a given setup, the optimal fixed duration stopping time.
 % stopping time. the following code can be used to find the 'best' fixed
 % duration stopping time for a given prior/ problem. 
 %% Finding the best fixed stopping time using simulation for 80 arm problem
+
+
 %Problem parameters  
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
@@ -716,6 +738,8 @@ else
     settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
     settings.filename = ''; %name of the figure file if it will be saved
 end
+tmpsettings = settings;
+settings.NUMOFREPS = 50; % can set as wish
 
 %%% Simulation details
 % Consider setting a different seed, so that best fixed stopping time is
@@ -729,19 +753,22 @@ if ~DOHIREPS %%%  Policies to test - this is for a 'test run'
     policies = 'aCKG:sfixed'; % Policies to include - here test is for cKG allocation, wihtout randomization
     rprob = [-1]; % randomization probability, negative if deterministic
     rtype = [0]; %1 for uniform, 2 for TTVS
-    Tfixed = [200]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    Tfixed = [600]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 else % For Section 6.2 - this is for what was done in section 6.2
-    policies = 'aCKG:sfixed'
+    policies = 'aCKG:sfixed';
     rprob = [-1]; % randomization probability, negative if deterministic
     rtype = [0]; %1 for uniform, 2 for TTVS
-    Tfixed = 3000; %10000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    Tfixed = 2500; %10000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 end
 
 %%% Run simulation
+mymsg = sprintf('miscellany code to plot E[OC], E[TC], E[SC]: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+if DOMSGS disp(mymsg); end;
 tic
 [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
 [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
 %%% Generating a figure
 GenerateOCTCSCFig(simresults, settings.foldertosave, settings.filename);
 toc
+settings = tmpsettings;
 

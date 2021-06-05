@@ -32,8 +32,9 @@ if size(W,2)<M || size(W,1)<M
     W = sqrt(D) * U';
     W = real(W');
 end
+
 % Observation model
-M = length(mu);  % OZGE: why is this check here? why not compute this from mu initially and remove the input argument?
+M = length(mu);  % compute number of alternatives
 H = full(sparse(1,i,1,1,M)); %row unit vector with 1 for the ith element
 
 F =W'*H';
