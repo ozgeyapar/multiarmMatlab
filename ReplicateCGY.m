@@ -258,7 +258,7 @@ else % otherwise use the follwoing line, which does all the graphs except cPDE a
     rtype = zeros(size(rprob));  %0 for no randomization, 1 for uniform, 2 for TTVS
 end
 %
-Tfixed = 20*ones(numrulepairs,1);%100*ones(9,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+Tfixed = 100*ones(numrulepairs,1);%100*ones(9,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
 if DOSAVEFILES
     settings.foldertosave = strcat(pdecorr, 'Outputs\');
     settings.filename = strcat('sec62Fig1-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
@@ -285,7 +285,7 @@ numrulepairs = (1+count(policies,':'))/2;
 rprob = [-1,-1,-1,0.4,0.2,0.4,0.2,-1]; % randomization probability, negative if deterministic
 rtype = [0,0,0, 1, 1, 2, 2, 0]; %1 for uniform, 2 for TTVS
 
-Tfixed = 10*ones(numrulepairs,1);%100*ones(8,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
+Tfixed = 100*ones(numrulepairs,1);%100*ones(8,1); %period to stop for fixed stopping policy, 0 if another stopping policy is used
 if DOSAVEFILES
     settings.foldertosave = strcat(pdecorr, 'Outputs\');
     settings.filename = strcat('sec72Fig4-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
@@ -699,7 +699,7 @@ if ~DOHIREPS %%something resembling fig 5 with subset of procedures, shorter run
     policies = 'aPDEUpperNO:sfixed:aCKGstar:sfixed:aPDELower:sfixed';
     rprob = -1*ones(3,1); % randomization probability, negative if deterministic
     rtype = 0*ones(3,1); %1 for uniform, 2 for TTVS
-    Tfixed = [20,20,20]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    Tfixed = [150,150,150]; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 else  % For Figure EC5
     policies = 'aPDEUpperNO:sfixed:aCKGstar:sfixed:aPDELower:sfixed:aPDEUpperNO:sPDEUpperNO:aCKGstar:sCKGstar:aPDELower:sPDELower';
     rprob = -1*ones(6,1); % randomization probability, negative if deterministic
@@ -761,7 +761,7 @@ else % For Section 6.2 - this is for what was done in section 6.2
     policies = 'aCKG:sfixed';
     rprob = [-1]; % randomization probability, negative if deterministic
     rtype = [0]; %1 for uniform, 2 for TTVS
-    Tfixed = 2500; %10000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    Tfixed = 3000; %10000; %period to stop for fixed stopping policy, 0 if another stopping policy is used
 end
 
 %%% Run simulation
