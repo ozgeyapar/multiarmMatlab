@@ -219,7 +219,7 @@ if ~DOPAPER
     end
 
     %%% Run simulation analysis
-    startt = tic;
+    tic;
     [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a figure to compare allocation policies
@@ -227,7 +227,7 @@ if ~DOPAPER
     %%% Calculate CI at a given t
     givent = 2;
     [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
-    toc(startt)
+    toc
 end
     
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -267,7 +267,7 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 %%% Run simulation analysis
-startt = tic;
+tic;
 [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
 [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
 %%% Generating a figure to compare allocation policies
@@ -275,7 +275,7 @@ GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
 %%% Calculate CI at a given t
 givent = 2;
 [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
-toc(startt)
+toc
 
 % For Figure 4 in Section 7.2
 mymsg = sprintf('analysis for Sec 7.2 fig 4: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
@@ -294,7 +294,7 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 %%% Run simulation analysis
-startt = tic;
+tic;
 [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
 [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
 %%% Generating a figure to compare allocation policies
@@ -302,7 +302,7 @@ GenerateOCFig(simresults, settings.foldertosave, settings.filename, 0);
 %%% Calculate CI at a given t
 givent = 2;
 [meandOC, sedOCa] = CalculateCIofOC( simresults, givent );
-toc(startt)
+toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: Finding the best fixed stopping time using simulation for dose-finding case study
@@ -375,7 +375,7 @@ if ~DOPAPER
         settings.filename = ''; %name of the figure file if it will be saved
     end
     %%% Run simulation
-    startt = tic;
+    tic;
     [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
@@ -385,7 +385,7 @@ if ~DOPAPER
     %%%     'Allocation','Stopping','E[T]', 'S.E', 'E[SC]','S.E','E[OC]','S.E','E[TC]'
     %%%     ,'S.E','P(CS)','CPU'}.
     %%% Can be opened with openvar('testTable') command to be viwed as a table.
-    toc(startt)
+    toc
 end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -411,13 +411,13 @@ if DOPAPER
         settings.filename = ''; %name of the figure file if it will be saved
     end
     %%% Run simulation
-    startt = tic;
+    tic;
     [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ table1sec63 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
     %%% Can be viewed with openvar('table1sec63')
-    toc(startt)
+    toc
 end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -446,13 +446,13 @@ if ~DOPAPER
         settings.filename = ''; %name of the figure file if it will be saved
     end
     %%% Run simulation
-    startt = tic;
+    tic;
     [ parameters ] = ProblemSetupDoseCaseStudy(priortype, zalpha);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ testTab2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
     %%% Can be viewed with openvar('testTab2')
-    toc(startt)
+    toc
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -478,7 +478,7 @@ if DOPAPER
     %%% Run simulations
     mymsg = sprintf('analysis for Sec 6.4 table 2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
     if DOMSGS disp(mymsg); end;
-    startt = tic;
+    tic;
     for i=1:length(priortypestodo)
         priortype = string(priortypestodo(i));
         Tfixed=0*ones(numrulepairs,1);
@@ -506,7 +506,7 @@ if DOPAPER
         [ table2sec64 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
         %%% Can be viewed with openvar('table2sec64')
     end
-    toc(startt)
+    toc
 end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -765,11 +765,50 @@ if DOPAPER
         settings.filename = ''; %name of the figure file if it will be saved
     end
     %%% Run simulation
+    tic;
     [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
     [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
     %%% Generating a table to compare policies
     [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
     %%% Can be viewed with openvar('tableEC2')
-    toc(startt)
+    toc
+end
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For Table 1 in Section 6.3 SPEED TEST
+
+% Comparing allocation and stopping policy pairs with 80 arm problem
+%Problem parameters  
+M = 80;
+alphaval = 100; %for alpha = alphaval/(M-1)^2
+pval = 6; %for P = 10^pval
+settings.NUMOFREPS = 25;
+
+if DOPAPER
+    mymsg = sprintf('speed test for sPDE related to sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+    if DOMSGS disp(mymsg); end;
+
+    policies = 'aCKG:sfixed:aCKG:sPDEtest:aCKG:sPDE'; % policies to include :sPDE
+%    policies = 'aCKG:sfixed:aCKG:sPDEtest:aCKG:sPDEtest'; % policies to include :sPDE
+    Tfixed = [130,0,0]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    numrulepairs = (1+count(policies,':'))/2;
+    rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('speedtest-P',num2str(pval),'-alpha',num2str(alphaval)); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation
+    tic;
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ table1sec63test ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );
+    %%% Can be viewed with openvar('table1sec63')
+    toc
 end
 

@@ -38,6 +38,13 @@ function [ rulename ] = AssignPolicyNames( functionname, functiontype, rtype, rp
             rulename = 'cPDE';
         end
     end
+    if strcmp(rulename,'cPDEtest')
+        if functiontype == 1
+            rulename = 'cPDEtest';
+        else
+            rulename = 'cPDEtest';
+        end
+    end
     if strcmp(rulename,'cPDEUpperNoOpt')
         if functiontype == 1
             rulename = 'cPDEUpper';
