@@ -146,7 +146,7 @@ PDELocalInit;
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = true; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 40; % GLOBAL: was 1000 for final paper. can set lower for testing.
+    CGYHIREPS = 50; % GLOBAL: was 1000 for final paper. can set lower for testing.
     CGYLOWREPS = 4; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
@@ -420,38 +420,6 @@ if DOPAPER
     toc(startt)
 end
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For Table EC2 in Appendix C.1
-if DOPAPER
-    mymsg = sprintf('analysis for app C.1 table EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
-    if DOMSGS disp(mymsg); end;
-    pval = 4; %for P = 10^4
-    if DOSLOWPAIRS % if all pairs desired... be prepared for LONG run unless analysis is parallelized
-        policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
-    else % remove the super slow aPDEUpper computation
-        policies = 'aPDEUpperNO:sCKGstar:aPDEUpperNO:sPDELower'; % policies to include
-        policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include %SEC TEST
-    end
-    numrulepairs = (1+count(policies,':'))/2;
-    rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
-    rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
-    Tfixed = 0*ones(numrulepairs,1); %[0,0,0,0]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-    if DOSAVEFILES
-        settings.foldertosave = strcat(pdecorr, 'Outputs\');
-        settings.filename = strcat('appC1tabEC2'); %name of the figure file if it will be saved
-    else
-        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
-        settings.filename = ''; %name of the figure file if it will be saved
-    end
-    %%% Run simulation
-    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
-    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
-    %%% Generating a table to compare policies
-    [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
-    %%% Can be viewed with openvar('tableEC2')
-    toc(startt)
-end
-
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: Testing of GPR prior, etc.
 
@@ -502,7 +470,6 @@ if DOPAPER
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include
     else
         policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO'; % policies to include
-        policies = 'aCKG:sfixed:aPDELower:sfixed:aVar:sfixed:aCKG:sPDE:aCKG:sPDEUpperNO:aPDELower:sPDEUpperNO:aPDELower:sPDE'; % policies to include %SEC test
     end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
@@ -774,4 +741,35 @@ tic
 GenerateOCTCSCFig(simresults, settings.foldertosave, settings.filename);
 toc
 settings = tmpsettings;
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For Table EC2 in Appendix C.1
+if DOPAPER
+    mymsg = sprintf('analysis for app C.1 table EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+    if DOMSGS disp(mymsg); end;
+    pval = 4; %for P = 10^4
+    if DOSLOWPAIRS % if all pairs desired... be prepared for LONG run unless analysis is parallelized
+        policies = 'aPDEUpper:sCKGstar:aPDEUpperNO:sCKGstar:aPDEUpper:sPDELower:aPDEUpperNO:sPDELower'; % policies to include
+    else % remove the super slow aPDEUpper computation
+        policies = 'aPDEUpperNO:sCKGstar:aPDEUpperNO:sPDELower'; % policies to include
+    end
+    numrulepairs = (1+count(policies,':'))/2;
+    rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
+    rtype = 0*ones(numrulepairs,1); %1 for uniform, 2 for TTVS
+    Tfixed = 0*ones(numrulepairs,1); %[0,0,0,0]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+    if DOSAVEFILES
+        settings.foldertosave = strcat(pdecorr, 'Outputs\');
+        settings.filename = strcat('appC1tabEC2'); %name of the figure file if it will be saved
+    else
+        settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
+        settings.filename = ''; %name of the figure file if it will be saved
+    end
+    %%% Run simulation
+    [ parameters ] = ProblemSetupSynthetic( M, alphaval, pval);
+    [ simresults ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies, rtype, rprob, Tfixed, settings);
+    %%% Generating a table to compare policies
+    [ tableEC2 ] = GenerateTCTable( simresults, settings.foldertosave, settings.filename );  
+    %%% Can be viewed with openvar('tableEC2')
+    toc(startt)
+end
 
