@@ -783,7 +783,7 @@ end
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
-settings.NUMOFREPS = 25;
+settings.NUMOFREPS = 2;
 
 if DOPAPER
     mymsg = sprintf('speed test for sPDE related to sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);

@@ -21,7 +21,7 @@ function [ i ] = AllocationBasedonEVI( evicalc, ispdeused, parameters, muin, sig
     % if the uniform distribution generates something below randprob, randomize
     value = parameters.randomizeornot;
     if value <= randprob && randtype == 1 %%Uniform
-        [ i ] = unidrnd(parameters.M);
+        [ i ] = parameters.randomizedarm;
     elseif value <= randprob && randtype == 2 % TTVS
         if all(evicalc<=0) && ispdeused == 1 %if stopping version of pde-based policy wants to stop
             i = AllocationTieBreaker( parameters, 1:parameters.M,  muin, sigmain, parameters.pdetieoption);

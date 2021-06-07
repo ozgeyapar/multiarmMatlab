@@ -67,10 +67,12 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
         end
         
         % CRN or not for randomized allocation rules
-        if settings.crn == 1 && any(rprob > 0) && any(rprob < 1)
+        if settings.crn == 1
             stdrand = rand(randstream,settings.BOUND,1); 
+            stdrandarm = randi(randstream,parameters.M, settings.BOUND,1); 
         else
             stdrand = [];
+            stdrandarm = [];
         end
         
         % Generate the actual means
@@ -86,10 +88,11 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
             end
             [ parameters.mu0, parameters.sigma0, parameters.lambdav, parameters.efns, parameters.pilotdetails ] = SimPilotandDetPrior( parameters, localsettings, stdpilot, thetav);
         end
-        RandStream.setGlobalStream(tiestream)
-        
-        for  j = 1:NUMOFPOL
-            [results.policy(j).detailed(n)] = SimulationFunc( cfSoln, cgSoln, policyfuncs{j,1}, policyfuncs{j,2}, rtype(j), rprob(j), Tfixed(j), parameters, thetav, stdnoise, stdrand, settings);
+                
+        for j = 1:NUMOFPOL
+            tiestream.Substream = n;
+            RandStream.setGlobalStream(tiestream)
+            [results.policy(j).detailed(n)] = SimulationFunc( cfSoln, cgSoln, policyfuncs{j,1}, policyfuncs{j,2}, rtype(j), rprob(j), Tfixed(j), parameters, thetav, stdnoise, stdrand, stdrandarm,settings);
         end
     end
     results.nofreps = NUMOFREPS;
