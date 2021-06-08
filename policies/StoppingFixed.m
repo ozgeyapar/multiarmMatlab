@@ -5,7 +5,7 @@ function [ stop ] = StoppingFixed(Tfixed, t)
 % continue.
 %
 % INPUTS: 
-% parameters: struct, problem parameters are included as fields 
+% Tfixed: The period at which the fixed stopping rule stops
 % t: numerical scalar, current period
 %
 % OUTPUTS: 

@@ -18,10 +18,22 @@ function [ i ] = AllocationBasedonEVI( evicalc, ispdeused, parameters, muin, sig
 %
 
 %%
+    % When the policy is called within a simulation, these values are passed
+    % This is to make sure that the allocation policies work when they are
+    % called standalone
+    if (~isfield(parameters, 'randomizeornot'))
+        value = rand;
+    else
+        value = parameters.randomizeornot;
+    end
+    if (~isfield(parameters, 'randomizedarm'))
+        armtosample = randi(parameters.M);
+    else
+        armtosample = parameters.randomizedarm;
+    end
     % if the uniform distribution generates something below randprob, randomize
-    value = parameters.randomizeornot;
     if value <= randprob && randtype == 1 %%Uniform
-        [ i ] = parameters.randomizedarm;
+        [ i ] = armtosample;
     elseif value <= randprob && randtype == 2 % TTVS
         if all(evicalc<=0) && ispdeused == 1 %if stopping version of pde-based policy wants to stop
             i = AllocationTieBreaker( parameters, 1:parameters.M,  muin, sigmain, parameters.pdetieoption);
