@@ -12,9 +12,9 @@ Below stages should be implemented once per machine to create code to describe t
 1. Install code from Peter Frazier et al's correlated KG, https://people.orie.cornell.edu/pfrazier/src.html under MatlabKG library. Extract from the zip. (Default folder name is "matlabKG". If the folder name is different, either change it to "matlabKG" or modify following steps according to your folder name.)
 2. Install code from Chick, Frazier, Gans PDE solution, https://github.com/sechick/pdestop. (Default folder name is "pdestop". If the folder name is different, either change it to "pdestop" or modify following steps according to your folder name.)
 3. Install the code from this repo. (Default folder name is "multiarmMatlab". If the folder name is different, either change it to "multiarmMatlab" or modify following steps according to your folder name.)
-4. Put multarmcode, pdestop, and matlabKG folders into the same directory. 
+4. Put multiarmMatlab, pdestop, and matlabKG folders into the same directory. 
 5. Make multiarmMatlab folder the current directory. 
-6. Create a file called **SetPaths.m**, which has the following lines of codes, and save it to the same directory as ReplicateCGY.m:
+6. Create a Matlab code file called **SetPaths.m**, which has the following lines of codes, and save it to the same directory as ReplicateCGY.m:
 ```
     pdecorrfolder = 'multiarmMatlab';
     pdecodefolder = 'pdestop';
