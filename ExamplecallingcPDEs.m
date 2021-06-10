@@ -74,14 +74,14 @@ i = 5; %get evi of arm i
 % To get the evi from cPDELower and cPDEUpper for an undiscounted problem
 mymsg = sprintf('calculating EVI using cPDELower approximation for arm %d',i);
 if DOMSGS disp(mymsg); end;
-evilower = cPDELowerUndis( cfSoln, parameters, mucur, sigmacur, i ) % returns 132.2694
+evilower = cPDELowerUndis( cfSoln, parameters, mucur, sigmacur, i ) 
 
 mymsg = sprintf('calculating EVI using cPDEUpper (equal weights) approximation for arm %d',i);
 if DOMSGS disp(mymsg); end;
-eviupper = cPDEUpperUndisNoOpt( cfSoln, parameters, mucur, sigmacur, i ) % returns 132.5960
+eviupper = cPDEUpperUndisNoOpt( cfSoln, parameters, mucur, sigmacur, i )
 
 mymsg = sprintf('calculating EVI using cPDE approximation for arm %d',i);
 if DOMSGS disp(mymsg); end;
 %  To get the evi from cPDE for an undiscounted problem
-evi = cPDEUndis( parameters, mucur, sigmacur, i ) % returns 132.4101
+evi = cPDEUndis( parameters, mucur, sigmacur, i ) 
 

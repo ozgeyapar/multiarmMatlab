@@ -54,6 +54,9 @@
 %  0 for nonrandomized, 1 for uniform, 2 for TTVS
 %   e.g., randtype = 0; 
 %   e.g., randtype = 2; 
+% NOTE: For randomization to occur, both randtype and randprob need to
+% indicate that randomization should be done. otherwise, a nonrandomized
+% version of the allocation policy will be done.
 %
 %% Inputs for stopping time functions: 
 %% NOTE: Each function uses a subset of these inputs, see the example calling
@@ -106,11 +109,11 @@ delta = 1; %discount rate
 rng default
 thetav = mvnrnd(mu0,sigma0); % sample a ground truth from the prior distribution
 
-%%% Call SetParametersFunc to setup the struct and check inputs
+%%% Call SetParametersFunc to setup a parameter structure and to check inputs
 list = {'M',M,'lambdav',lambdav,'mu0',mu0,'sigma0',sigma0,'efns',lambdav./diag(sigma0)','P',P,'I',I,'c',c, 'delta', delta, 'thetav', thetav};
 [ parameters, ~ ] = SetParametersFunc( list );
 
-%%% Sample a couple of times to get a different prior distribution
+%%% Sample a couple of times from random arms and update the prior distribution based on those observations
 mucur = parameters.mu0;
 sigmacur = parameters.sigma0;
 for j = 1:2
@@ -122,10 +125,9 @@ end
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: CALLING ALLOCATION POLICIES
 %% Deterministic Versions of Policies
-%% Arms returned by below allocation policies are: 1,3,10,3,3,3,17,16,16,3
 mymsg = 'calculating the allocation decisions from different deterministic policies';
 if DOMSGS disp(mymsg); end;
-randtype = 0;
+randtype = 0; % for these examples, do deterministic allocations. so randtype is set to 0, randprob set to -1 (below 0).
 randprob = -1;
 [ i ] = AllocationcPDEUpperNoOpt( cfSoln, cgSoln, parameters, mucur, sigmacur, randtype, randprob )
 [ i ] = AllocationcPDELower( cfSoln, cgSoln, parameters, mucur, sigmacur, randtype, randprob )
@@ -147,7 +149,6 @@ if DOSLOWPAIRS % if you want cPDE and optimized cPDEUpper use the next line - be
 end
 
 %% Randomized Examples
-%% Arms returned by below allocation policies are: 3,17,6
 mymsg = 'calculating the allocation decisions from a sample randomized policies';
 if DOMSGS disp(mymsg); end;
 rng default
@@ -161,7 +162,6 @@ randprob = 0.2;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: CALLING STOPPING TIMES
-%% All stopping policies return 0 (meaning do not stop)
 mymsg = 'calculating the stopping decision from different dtopping times';
 if DOMSGS disp(mymsg); end;
 

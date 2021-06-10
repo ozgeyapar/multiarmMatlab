@@ -146,8 +146,8 @@ PDELocalInit;
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = true; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 50; % GLOBAL: was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 4; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
+    CGYHIREPS = 20; % GLOBAL: was 1000 for final paper. can set lower for testing.
+    CGYLOWREPS = 3; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
@@ -169,8 +169,7 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
-settings.seed = 487429276; % seed to be used for random number generation - value used in paper.
-%settings.seed = 48742927; % seed to be used for random number generation
+settings.seed = 487429276; % seed to be used for random number generation
 settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observations per arm per sample path.
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
@@ -393,12 +392,14 @@ end
 if DOPAPER
     mymsg = sprintf('analysis for sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
     if DOMSGS disp(mymsg); end;
-    if ~DOSLOWPAIRS
+    if DOSLOWPAIRS
         policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDE:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
         Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     else
-        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDE:aPDELower:sPDELower:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
-        Tfixed = [493,200,0,130,0,0,0,0,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDEtest:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEtest:aPDELower:sPDELower:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
+        Tfixed = [493,200,0,0,0,130,0,0,0,0,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
+%        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDEtest:aCKG:sfixed'; % policies to include
+%        Tfixed = [493,200,0,0,0,130]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     end
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic
@@ -783,7 +784,7 @@ end
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
-settings.NUMOFREPS = 2;
+settings.NUMOFREPS = 10;
 
 if DOPAPER
     mymsg = sprintf('speed test for sPDE related to sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
