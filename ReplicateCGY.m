@@ -663,7 +663,7 @@ else
     settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
     settings.filename = ''; %name of the figure file if it will be saved
 end
-mymsg = sprintf('analysis for App C.2 fig EC.5: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
+mymsg = sprintf('analysis for App D.1. fig EC.5: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
 if DOMSGS disp(mymsg); end;
 
 %%% Policies to test
@@ -748,6 +748,10 @@ settings = tmpsettings;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK For Table EC2 in Appendix C.1
+%Problem parameters  
+M = 80;
+alphaval = 100; %for alpha = alphaval/(M-1)^2
+
 if DOPAPER
     mymsg = sprintf('analysis for app C.1 table EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
     if DOMSGS disp(mymsg); end;
