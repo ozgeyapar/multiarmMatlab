@@ -61,32 +61,32 @@ The experiments reported in the paper were actually run on a set of servers, bec
 
 Please see the comments in ReplicateCGY.m for further information.
 
-If the figures and graphs are generated with Monte Carlo analysis with 5 replications per sample path, then the following are the run times on a Win64 machine with Matlab 2021a, Intel i7-chip at 2.5Ghz, 2 cores, 16Gb RAM, even without running the analysis for the cPDE allocation). Note that the paper typically had 500, 1000, or 2000 replications per sample path (so expect very long run times if running on a typical laptop), and that the run times vary for the several graphs and tables.
+If the figures and graphs are generated with Monte Carlo analysis with 12 replications per sample path, then the following are the run times on a Win64 machine with Matlab 2021a, Intel i7-chip at 2.5Ghz, 2 cores, 16Gb RAM, even without running the analysis for the cPDE allocation). Note that the paper typically had 500, 1000, or 2000 replications per sample path (so expect very long run times if running on a typical laptop), and that the run times vary for the several graphs and tables.
 ```
-analysis for Sec 6.2 fig 1: Nreps = 5, doslowpairs = 0.
-Elapsed time is 170.573843 seconds.
-analysis for Sec 7.2 fig 4: Nreps = 5, doslowpairs = 0.
-Elapsed time is 333.239685 seconds.
-analysis for Sec 6.4 fig 3: Nreps = 5, doslowpairs = 0.
-Elapsed time is 34.129469 seconds.
-analysis for sec 6.3 table 1: Nreps = 5, doslowpairs = 0.
-Elapsed time is 488.917335 seconds.
-analysis for Sec 6.4 table 2: Nreps = 5, doslowpairs = 0.
-Elapsed time is 899.837534 seconds.
-analysis for App C.2 fig EC.1: Nreps = 5, doslowpairs = 0.
-Elapsed time is 89.140128 seconds.
-analysis for App C.2 fig EC.2: Nreps = 5, doslowpairs = 0.
-Elapsed time is 276.643539 seconds.
-analysis for App C.2 fig EC.3 and fig EC.4: Nreps = 5, doslowpairs = 0.
-Elapsed time is 80.386229 seconds.
-analysis for App C.2 fig EC.5: Nreps = 10, doslowpairs = 0.
-Elapsed time is 1086.090157 seconds.
+analysis for Sec 6.2 fig 1: Nreps = 12, doslowpairs = 0.
+Elapsed time is 752.905698 seconds.
+analysis for Sec 7.2 fig 4: Nreps = 12, doslowpairs = 0.
+Elapsed time is 1639.834095 seconds.
+analysis for Sec 6.4 fig 3: Nreps = 12, doslowpairs = 0.
+Elapsed time is 85.565114 seconds.
+analysis for sec 6.3 table 1: Nreps = 12, doslowpairs = 0.
+Elapsed time is 1698.219284 seconds.
+analysis for Sec 6.4 table 2: Nreps = 12, doslowpairs = 0.
+Elapsed time is 3136.298123 seconds.
+analysis for App C.2 fig EC.1: Nreps = 12, doslowpairs = 0.
+Elapsed time is 757.905811 seconds.
+analysis for App C.2 fig EC.2: Nreps = 12, doslowpairs = 0.
+Elapsed time is 328.416114 seconds.
+analysis for App C.2 fig EC.3 and fig EC.4: Nreps = 12, doslowpairs = 0.
+Elapsed time is 106.330059 seconds.
+analysis for App C.2 fig EC.5: Nreps = 12, doslowpairs = 0.
+Elapsed time is 4563.797243 seconds.
 miscellany code to plot E[OC], E[TC], E[SC]: Nreps = 50, doslowpairs = 0.
-Elapsed time is 80.303257 seconds.
-analysis for app C.1 table EC.2: Nreps = 10, doslowpairs = 0.
-Elapsed time is 170.365323 seconds.
+Elapsed time is 422.477464 seconds.
+analysis for app C.1 table EC.2: Nreps = 12, doslowpairs = 0.
+Elapsed time is 236.660793 seconds.
 speed test for sPDE related to sec 6.3 table 1: Nreps = 10, doslowpairs = 0.
-Elapsed time is 427.041132 seconds.
+Elapsed time is 493.178816 seconds.
 ```
 
 (c) 2017-2021 The authors, creative commons. If you use the code, please acknowledge this repo and the paper Chick, Gans, Yapar, 2021, Bayesian Sequential Learning for Clinical Trials of Multiple Correlated Medical Interventions, Management Science (to appear). 
