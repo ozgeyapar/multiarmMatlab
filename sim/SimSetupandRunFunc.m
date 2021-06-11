@@ -92,7 +92,18 @@ function [ results ] = SimSetupandRunFunc( cgSoln, cfSoln, parameters, policies,
         for j = 1:NUMOFPOL
             tiestream.Substream = n;
             RandStream.setGlobalStream(tiestream)
+            
+            % Policies that assume independence use independent prior
+            if isequal(policyfuncs{j,1}, aESPB) || isequal(policyfuncs{j,1}, aESPb) || isequal(policyfuncs{j,2}, sESPb) 
+                tempparameters = parameters;
+                parameters.sigma0 = diag(diag(parameters.sigma0));
+            end
+            % Run the simulation
             [results.policy(j).detailed(n)] = SimulationFunc( cfSoln, cgSoln, policyfuncs{j,1}, policyfuncs{j,2}, rtype(j), rprob(j), Tfixed(j), parameters, thetav, stdnoise, stdrand, stdrandarm,settings);
+            % Revert back the prior for the next policy
+            if isequal(policyfuncs {j,1}, aESPB) || isequal(policyfuncs {j,1}, aESPb) || isequal(policyfuncs {j,2}, sESPb) 
+                parameters = tempparameters;
+            end
         end
     end
     results.nofreps = NUMOFREPS;

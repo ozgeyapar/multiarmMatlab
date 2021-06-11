@@ -1,5 +1,5 @@
-function [ stop ] = StoppingcPDE( undissoln, dissoln, parameters, muin, sigmain)
-%StoppingcPDE
+function [ stop ] = StoppingcPDEold2( undissoln, dissoln, parameters, muin, sigmain)
+%StoppingcPDEold2
 % PURPOSE: Implements the faster version of cPDE stopping time defined in 
 % the online companion of Chick, Gans, Yapar (2020) (Algorithm 1: cPDE 
 % stopping time: version to avert computing unneeded PDE solutions.)
