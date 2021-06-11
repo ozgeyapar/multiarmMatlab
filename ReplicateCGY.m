@@ -146,7 +146,7 @@ PDELocalInit;
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
 DOHIREPS = false; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
-    CGYHIREPS = 20; % GLOBAL: was 1000 for final paper. can set lower for testing.
+    CGYHIREPS = 12; % GLOBAL: was 1000 for final paper. can set lower for testing.
     CGYLOWREPS = 5; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
@@ -169,7 +169,7 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
-settings.seed = 48742927; % 487429276 seed to be used for random number generation
+settings.seed = 487429276; % 487429276 seed to be used for random number generation
 settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observations per arm per sample path.
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
