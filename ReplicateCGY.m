@@ -174,7 +174,7 @@ settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observa
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK: Policies to test. 
+%% CHUNK: Test to illustrate how to setup and run a simulation experiment. 
 %% Copy and paste chunk by chunk the code.
 % this chunk illustrates examples of creating a list of policies to test,
 % and running a simulation experiment, including output of graphs
@@ -321,6 +321,7 @@ zalpha = 1/2; % used in robust and tilted priors
 %%% Simulation details
 % Consider setting a different seed, so that best fixed stopping time is
 % coming from a different set of observations
+tempsettings = settings;
 settings.seed = 6541235; % different seed to be used for random number generation
 
 policies = 'aCKG:sfixed';
@@ -347,6 +348,8 @@ for i=1:length(priortypestodo)
 end
 toc
 
+%Go back to the old seed
+settings = tempsettings;
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: Table 1 of SECTION 6.3, 
 
@@ -357,7 +360,7 @@ alphaval = 100; %for alpha = alphaval/(M-1)^2
 pval = 6; %for P = 10^pval
 
 %%%%%%%%%%%%%%%%%%%%
-%%%Policies to test
+%%% Small test
 if ~DOPAPER
     mymsg = 'demo analysis analogous to sec 6.3 table 1';
     if DOMSGS disp(mymsg); end;
@@ -423,8 +426,9 @@ end
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: Testing of GPR prior, etc.
-
 %% Comparing allocation and stopping policy pairs with dose-finding case study
+%%%%%%%%%%%%%%%%%%%%
+%%% Small test
 %Problem parameters   
 priortype = 'gpr'; %'gpr', 'robust' or 'tilted'
 zalpha = 1/2; % used in robust and tilted priors
