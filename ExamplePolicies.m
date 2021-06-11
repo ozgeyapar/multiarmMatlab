@@ -26,7 +26,7 @@
 % to run properly.
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% GENERAL INFORMATION ABOUT CALLING AN ARM ALLOCATION POLICY AND A STOPPING TIME.
+%% GENERAL INFORMATION ABOUT CALLING AN ARM ALLOCATION POLICY AND A STOPPING TIME
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This code provides an example calling convention for each supported 
 % allocaiton rule and stopping time. 
