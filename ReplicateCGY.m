@@ -145,9 +145,9 @@ PDELocalInit;
 
 % Simulation details: Settings that can be edited by end-user. 
 DOPAPER = true; % GLOBAL: Set to TRUE to get figures/graphs for paper, FALSE to get sample runs with simpler graphs
-DOHIREPS = true; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
+DOHIREPS = false; % GLOBAL: Set to TRUE to get lots of replications, FALSE to get small number of reps for testing
     CGYHIREPS = 20; % GLOBAL: was 1000 for final paper. can set lower for testing.
-    CGYLOWREPS = 3; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
+    CGYLOWREPS = 5; % GLOBAL: small number of replications so runs don't take too long - for debug or checking install
 DOSAVEFILES = true; % GLOBAL: set to true to save results and figures to file, FALSE if files are not to be saved. 
     %if saved, need to set foldertosave and filename fields of the settings
     %field as denoted below, e.g. settings.foldertosave = strcat(pdecorr,
@@ -169,7 +169,7 @@ else
     settings.filename = ''; %name of the figure file if it will be saved
 end
 settings.crn = 1; %1 if crn is implemented, 0 otherwise
-settings.seed = 487429276; % seed to be used for random number generation
+settings.seed = 48742927; % 487429276 seed to be used for random number generation
 settings.BOUND = 7500; % FOr paper, was set to 10000 - Maximum number of observations per arm per sample path.
 %% Note that the settings parameters can be adjusted below for a given experiment to suit the needs of that experiment, e.g. to have files saved to a different directory if you prefer
 
@@ -321,7 +321,7 @@ zalpha = 1/2; % used in robust and tilted priors
 %%% Simulation details
 % Consider setting a different seed, so that best fixed stopping time is
 % coming from a different set of observations
-settings.seed = 6541235; % seed to be used for random number generation
+settings.seed = 6541235; % different seed to be used for random number generation
 
 policies = 'aCKG:sfixed';
 rprob = [-1]; % randomization probability, negative if deterministic
@@ -348,7 +348,7 @@ end
 toc
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHUNK: Table 1 of SECTION 6.3, Table EC.2 in Appendix C.1
+%% CHUNK: Table 1 of SECTION 6.3, 
 
 % Comparing allocation and stopping policy pairs with 80 arm problem
 %Problem parameters  
@@ -697,7 +697,6 @@ toc
 % duration stopping time for a given prior/ problem. 
 %% Finding the best fixed stopping time using simulation for 80 arm problem
 
-
 %Problem parameters  
 M = 80;
 alphaval = 100; %for alpha = alphaval/(M-1)^2
@@ -709,13 +708,13 @@ else
     settings.foldertosave = -1; % folder path to save results and figures, -1 to not save, example to save: strcat(pdecorr, 'Outputs\')
     settings.filename = ''; %name of the figure file if it will be saved
 end
+
 tmpsettings = settings;
 settings.NUMOFREPS = 50; % can set as wish
-
 %%% Simulation details
 % Consider setting a different seed, so that best fixed stopping time is
 % coming from a different set of observations
-% settings.seed = 6541235; % seed to be used for random number generation
+settings.seed = 6541; % seed to be used for random number generation
 
 % HERE we give optoin to do a test call of code which runs reasonably fast,
 % then given another option for the example taht was used in section 6.2
@@ -744,7 +743,7 @@ toc
 settings = tmpsettings;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For Table EC2 in Appendix C.1
+%% CHUNK For Table EC2 in Appendix C.1
 if DOPAPER
     mymsg = sprintf('analysis for app C.1 table EC.2: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
     if DOMSGS disp(mymsg); end;

@@ -2,9 +2,13 @@
 
 This site provides Matlab code to implement the allocation policies and stopping times for multiarm clinical trials and numerical experiements that are described in the following paper: 
 
-Chick, Stephen E. and Gans, Noah and Yapar, Ozge, Bayesian Sequential Learning for Clinical Trials of Multiple Correlated Medical Interventions (August 31, 2020). INSEAD Working Paper No. 2020/40/TOM/ACGRE, Available at SSRN: https://ssrn.com/abstract=3184758 or http://dx.doi.org/10.2139/ssrn.3184758
+Chick, Stephen E. and Gans, Noah and Yapar, Ozge, 2021, Bayesian Sequential Learning for Clinical Trials of Multiple Correlated Medical Interventions, Management Science (to appear). 
 
-The code requires (a) some setup that must be done once per machine, to create code to describe the local installation, to create data files that store solutions to certain standardized optimal stopping problems, and then (b) some code to execute each time you wish to use the code for your applications, or to recreate the graphs from the paper.
+(Earlier versions of the paper available as: INSEAD Working Paper No. 2020/40/TOM/ACGRE, Available at SSRN: https://ssrn.com/abstract=3184758 or http://dx.doi.org/10.2139/ssrn.3184758)
+
+The Matlab code requires (a) some setup that must be done once per machine, to create code to describe the local installation, to create data files that store solutions to certain standardized optimal stopping problems, and then (b) some code to execute each time you wish to use the code for your applications, or to recreate the graphs from the paper. 
+
+The code in this repo has been tested with Matlab version 2021a on a Windows machine.  
 
 # SETUP (ONCE PER MACHINE)
 Below stages should be implemented once per machine to create code to describe the local installation, to create data files that store solutions to certain standardized optimal stopping problems.
@@ -42,8 +46,7 @@ If your directory structure or folder names are different, adjust the SetPaths.m
 PDELocalInit;
 [cgSoln, cfSoln, ~, ~] = PDELoadSolnFiles(PDEmatfilebase, false);
 ```
-# TO REPLICATE THE FIGURES AND TABLES IN CHICK, GANS, YAPAR (2020)
-The code can be used to produce all graphs and tables in the above paper. ReplicateCGY.m is intended to be copied and pasted to the command window. 
+There are then three files with code that demonstrate the usage of the arm allocation policies and adaptive stopping times in the paper. The first two files are demonstrations of calling codes (for allocation policies and stopping times in the first, and to compute expected value of information approximations in the second). The third file gives code that can be used to generate the tables and figures in the paper and electronic companion.
 
 # IN A SESSION TO RUN ALLOCATION POLICIES AND STOPPING TIMES
 The code can be used to calculate the allocation policy and stopping time results for a given problem. ExamplePolicies.m is intended to be copied and pasted to the command window. It includes code that sets up an example problem and calls allocation policies and stopping times for this example problem. 
@@ -51,3 +54,38 @@ The code can be used to calculate the allocation policy and stopping time result
 # IN A SESSION TO OBTAIN EVI VALUES FROM CPDE, CPDELOWER and CPDEUPPER
 The code can be used to calculate the expected value of information (EVI) approximations for a given problem. ExamplecallingcPDEs.m is intended to be copied and pasted to the command window. It contains examples that show how to get EVI values estimated with cPDE, cPDELower and cPDEUpper. 
 
+# TO MAKE FIGURES AND TABLES SIMILAR TO THE FIGURES AND TABLES IN CHICK, GANS, YAPAR (2021)
+The code in ReplicateCGY.m can be used to produce all graphs and tables in the above paper. ReplicateCGY.m is intended to be copied and pasted to the Matlab command window, chunk by chunk. There is statistical noise reported in the simulation output, which may cause graphs to differ in specifics. 
+
+The experiments reported in the paper were actually run on a set of servers, because some of the curves and table entries in the paper required a computationally highly expensive amount of work (most notably, the cPDE arm allocation; but some of the others also are somewhat computationally expensive). Thus, ReplicateCGY.m allows the end user to specify two variables: DOSLOWPAIRS as true or false, depending on whether one wishes to run the most computationally challenging outputs, and DOPAPER as true or false, depending on whether one wishes to run some demo runs or to run experiments as described in the paper. The end user can also set the number of simulation replications for running the experiments for the paper. 
+
+Please see the comments in ReplicateCGY.m for further information.
+
+If the figures and graphs are generated with Monte Carlo analysis with 5 replications per sample path, then the following are the run times on a Win64 machine with Matlab 2021a, Intel i7-chip at 2.5Ghz, 2 cores, 16Gb RAM, even without running the analysis for the cPDE allocation). Note that the paper typically had 500, 1000, or 2000 replications per sample path (so expect very long run times if running on a typical laptop), and that the run times vary for the several graphs and tables.
+
+analysis for Sec 6.2 fig 1: Nreps = 5, doslowpairs = 0.
+Elapsed time is 170.573843 seconds.
+analysis for Sec 7.2 fig 4: Nreps = 5, doslowpairs = 0.
+Elapsed time is 333.239685 seconds.
+analysis for Sec 6.4 fig 3: Nreps = 5, doslowpairs = 0.
+Elapsed time is 34.129469 seconds.
+analysis for sec 6.3 table 1: Nreps = 5, doslowpairs = 0.
+Elapsed time is 488.917335 seconds.
+analysis for Sec 6.4 table 2: Nreps = 5, doslowpairs = 0.
+Elapsed time is 899.837534 seconds.
+analysis for App C.2 fig EC.1: Nreps = 5, doslowpairs = 0.
+Elapsed time is 89.140128 seconds.
+analysis for App C.2 fig EC.2: Nreps = 5, doslowpairs = 0.
+Elapsed time is 276.643539 seconds.
+analysis for App C.2 fig EC.3 and fig EC.4: Nreps = 5, doslowpairs = 0.
+Elapsed time is 80.386229 seconds.
+analysis for App C.2 fig EC.5: Nreps = 10, doslowpairs = 0.
+Elapsed time is 1086.090157 seconds.
+miscellany code to plot E[OC], E[TC], E[SC]: Nreps = 50, doslowpairs = 0.
+Elapsed time is 80.303257 seconds.
+analysis for app C.1 table EC.2: Nreps = 10, doslowpairs = 0.
+Elapsed time is 170.365323 seconds.
+speed test for sPDE related to sec 6.3 table 1: Nreps = 10, doslowpairs = 0.
+Elapsed time is 427.041132 seconds.
+
+(c) 2017-2021 The authors, creative commons. If you use the code, please acknowledge this repo and the paper Chick, Gans, Yapar, 2021, Bayesian Sequential Learning for Clinical Trials of Multiple Correlated Medical Interventions, Management Science (to appear). 
