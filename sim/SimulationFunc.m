@@ -98,6 +98,13 @@ function [results] = SimulationFunc( cfSoln, cgSoln, allpolicy, stoppolicy, rtyp
     
     if t == 0 %we stopped immediately
         stoppedimm = 1;
+        [~,sel] = max(parameters.P*mucur - parameters.I);
+        selected = thetav(sel);
+        SC(t+1) = 0;
+        [~,best] = max(parameters.P*thetav - parameters.I);
+        bestvalue = thetav(best);
+        OC(t+1) = parameters.P*(bestvalue - selected) - parameters.I(best) + parameters.I(sel);
+        TC(t+1) = SC(t+1) + OC(t+1);
     end
     
     results.thetav = thetav;
