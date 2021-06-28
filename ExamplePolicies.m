@@ -162,7 +162,7 @@ randprob = 0.2;
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHUNK: CALLING STOPPING TIMES
-mymsg = 'calculating the stopping decision from different dtopping times';
+mymsg = 'calculating the stopping decision from different stopping times';
 if DOMSGS disp(mymsg); end;
 
 [ stop ] = StoppingcPDEUpperNoOpt( cfSoln, cgSoln, parameters,  mucur, sigmacur )

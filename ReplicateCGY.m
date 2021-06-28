@@ -399,9 +399,9 @@ if DOPAPER
         policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEUpperNO:aPDELower:sPDE:aPDELower:sfixed:aPDELower:sPDELower:aPDELower:sfixed:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
         Tfixed = [493,200,0,0,130,0,0,0,0,200,0,150,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     else
-        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDEtest:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDEtest:aPDELower:sPDELower:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
+        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDE:aCKG:sfixed:aCKG:sPDELower:aCKG:sCKGstar:aPDELower:sPDE:aPDELower:sPDELower:aPDELower:sCKGstar:aVar:sfixed:aVar:sfixed'; % policies to include
         Tfixed = [493,200,0,0,0,130,0,0,0,0,0,200,150]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
-%        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDEtest:aCKG:sfixed'; % policies to include
+%        policies = 'aCKG:sfixed:aCKG:sfixed:aCKG:sPDEUpperNO:aCKG:sPDE:aCKG:sPDE:aCKG:sfixed'; % policies to include
 %        Tfixed = [493,200,0,0,0,130]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     end
     numrulepairs = (1+count(policies,':'))/2;
@@ -797,8 +797,7 @@ if DOPAPER
     mymsg = sprintf('speed test for sPDE related to sec 6.3 table 1: Nreps = %d, doslowpairs = %d.',settings.NUMOFREPS,DOSLOWPAIRS);
     if DOMSGS disp(mymsg); end;
 
-    policies = 'aCKG:sfixed:aCKG:sPDEtest:aCKG:sPDE'; % policies to include :sPDE
-%    policies = 'aCKG:sfixed:aCKG:sPDEtest:aCKG:sPDEtest'; % policies to include :sPDE
+    policies = 'aCKG:sfixed:aCKG:sPDE'; % policies to include :sPDE
     Tfixed = [130,0,0]'; %period to stop for fixed stopping policy, 0 if another stopping policy is used
     numrulepairs = (1+count(policies,':'))/2;
     rprob = -1*ones(numrulepairs,1); % randomization probability, negative if deterministic

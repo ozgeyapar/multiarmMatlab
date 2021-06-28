@@ -36,4 +36,4 @@ sCKG = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingcKG1Rati
 sESPb = @(undissoln, dissoln, parameters, muin,sigmain,Tfixed,t) StoppingIndESPb( parameters, muin, sigmain );
 sPDEold = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDEOld( parameters, muin, sigmain );
 sPDE = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDE(undissoln, dissoln, parameters, muin, sigmain);
-sPDEtest = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDEtest(undissoln, dissoln, parameters, muin, sigmain);
+sPDEtest = @(undissoln, dissoln,parameters,  muin,sigmain,Tfixed,t) StoppingcPDEold2(undissoln, dissoln, parameters, muin, sigmain);
