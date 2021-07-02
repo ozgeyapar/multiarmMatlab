@@ -10,6 +10,8 @@ The Matlab code requires (a) some setup that must be done once per machine, to c
 
 The code in this repo has been tested with Matlab version 2021a on a Windows machine.  
 
+This project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Sklodowska-Curie Grant agreement No 676129.
+
 # SETUP (ONCE PER MACHINE)
 Below stages should be implemented once per machine to create code to describe the local installation, to create data files that store solutions to certain standardized optimal stopping problems.
 
