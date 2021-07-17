@@ -8,7 +8,7 @@ Chick, Stephen E. and Gans, Noah and Yapar, Ozge, 2021, Bayesian Sequential Lear
 
 The Matlab code requires (a) some setup that must be done once per machine, to create code to describe the local installation, to create data files that store solutions to certain standardized optimal stopping problems, and then (b) some code to execute each time you wish to use the code for your applications, or to recreate the graphs from the paper. 
 
-The code in this repo has been tested with Matlab version 2021a on a Windows machine.  
+The code in this repo has been tested with Matlab version 2021a on a Windows machine. Code available at: https://github.com/ozgeyapar/multiarmMatlab 
 
 This project has received funding from the European Union’s Horizon 2020 research and innovation program under the Marie Sklodowska-Curie Grant agreement No 676129.
 
